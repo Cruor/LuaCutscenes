@@ -1,0 +1,9 @@
+/*
+
+# files
+!*.cs
+!*.csproj
+!/.gitignore
+!/.gitmodules
+!/LICENSE
+!/README.md
