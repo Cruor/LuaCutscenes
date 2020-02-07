@@ -1,0 +1,12 @@
+# -- Entity and Trigger Tooltips -- 
+#    placements.entities.entityName.tooltips.attr=Tooltip
+#    placements.triggers.triggerName.tooltips.attr=Tooltip
+
+# -- Entities -- 
+
+# -- Triggers -- 
+
+# Lua Cutscene
+
+placements.triggers.luaCutscenes/luaCutsceneTrigger.tooltips.onlyOnce=If the trigger should only trigger once.
+placements.triggers.luaCutscenes/luaCutsceneTrigger.tooltips.filename=Cutscene file to load relative to mod folder. File extension is not included.
