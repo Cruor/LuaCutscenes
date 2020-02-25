@@ -1,4 +1,4 @@
--- TODO - Return env in getCutscene
+-- TODO - Cleanup
 
 local celesteMod = require("#celeste.mod")
 
@@ -18,7 +18,7 @@ local function prepareForCSharp(env, func)
         return onBegin, onEnd
 
     else
-        celesteMod.logger.log(celesteMod.logLevel.error, "Lua Cutscenes", "Failed to load cutscene: " .. onBegin)
+        celesteMod.logger.log(celesteMod.logLevel.error, "Lua Cutscenes", "Failed to load cutscene in Lua: " .. onBegin)
 
         return success, onBegin
     end

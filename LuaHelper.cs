@@ -42,7 +42,7 @@ namespace Celeste.Mod.LuaCutscenes
 
         public static IEnumerator LuaCoroutineToIEnumerator(LuaCoroutine routine)
         {
-            while (routine.SafeMoveNext())
+            while (routine != null && routine.SafeMoveNext())
             {
                 if (routine.Current is double || routine.Current is long)
                 {

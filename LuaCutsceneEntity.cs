@@ -49,7 +49,7 @@ namespace Celeste.Mod.LuaCutscenes
                 }
                 catch (Exception e)
                 {
-                    Logger.Log(LogLevel.Error, "Lua Cutscenes", $"Failed to load cutscene: {e}");
+                    Logger.Log(LogLevel.Error, "Lua Cutscenes", $"Failed to load cutscene in C#: {e}");
                 }
             }
         }

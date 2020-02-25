@@ -29,9 +29,36 @@ local function vector2(x, y)
     end
 end
 
+-- Get the content of a file from Celeste Mods directory
+function helpers.readCelesteAsset(filename)
+    return celesteMod[modName].LuaHelper.GetFileContent(filename)
+end
+
+-- Run the file and return its result
+-- Does NOT do caching like Lua `require`!
+function helpers.requireCelesteAsset(filename)
+    local content = helpers.readCelesteAsset(filename)
+
+    if not content then
+        celesteMod.logger.log(celesteMod.LogLevel.Error, "Lua Cutscenes", "Failed to require asset in Lua: file '" .. filename .. "' not found")
+
+        return
+    end
+
+    local func = load(content, nil, nil, {})
+    local success, result = pcall(func)
+
+    if success then
+        return result
+
+    else
+        celesteMod.logger.log(celesteMod.LogLevel.Error, "Lua Cutscenes", "Failed to require asset in Lua: " .. result)
+    end
+end
+
 -- Log debug message
 function helpers.log(message, tag)
-    celesteMod.logger.log(celesteMod.LogLevel.Info, tag or "Lua Cutscenes", message and tostring(message))
+    celesteMod.logger.log(celesteMod.LogLevel.Info, tag or "Lua Cutscenes", tostring(message))
 end
 
 -- Wait for duration amount of seconds
@@ -41,13 +68,15 @@ function helpers.getLevel()
     return engine.Level
 end
 
+helpers.getRoom = helpers.getLevel
+
 function helpers.getSession()
     return engine.Level.Session
 end
 
 -- Display minitextbox with dialog
 function helpers.say(dialog)
-    coroutine.yield(celeste.Textbox.Say(dialog, {}))
+    coroutine.yield(celeste.Textbox.Say(tostring(dialog), {}))
 end
 
 function helpers.walkTo(x, walkBackwards, speedMultiplier, keepWalkingIntoWalls)
@@ -67,7 +96,7 @@ function helpers.run(x, fastAnimation)
 end
 
 function helpers.die(direction, evenIfInvincible, registerDeathInStats)
-    player:Die(vector2(direction or {0, 0}), evenIfInvincible or false, evenIfInvincible or evenIfInvincible == nil)
+    player:Die(vector2(direction or {0, 0}), evenIfInvincible or false, registerDeathInStats or registerDeathInStats == nil)
 end
 
 function helpers.setPlayerState(state, locked)
@@ -90,7 +119,7 @@ function helpers.getPlayerState()
 end
 
 function helpers.disableMovement()
-    helpers.setPlayerState("Dummy", true)
+    helpers.setPlayerState("Dummy", false)
 end
 
 function helpers.enableMovement()
@@ -109,17 +138,25 @@ function helpers.changeRoom(name)
     level.Session.Level = name
     level.Session.RespawnPoint = level:GetSpawnPoint(vector2(level.Bounds.Left, level.Bounds.Bottom))
     level.Session:UpdateLevelStartDashes()
+
+    -- TODO - Test
+    engine.Scene = celeste.LevelLoader(level.Session, level.Session.RespawnPoint)
 end
 
-function helpers.teleportTo(x, y, name)
+function helpers.getRoomPosition(name)
+    -- TODO - Implement
+    -- If name is absent use current room
+end
+
+function helpers.teleportTo(x, y, room)
     player.Position = vector2(x, y)
 
-    if name then
-        helpers.changeRoom(name)
+    if room then
+        helpers.changeRoom(room)
     end
 end
 
-function helpers.teleport(x, y, name)
+function helpers.teleport(x, y, room)
     helpers.teleportTo(player.Position.X + x, player.Position.Y + y, name)
 end
 
@@ -146,6 +183,10 @@ end
 
 function helpers.getFirstEntity(name)
     return celeste.Mod[modName].MethodWrappers.GetFirstEntity(name)
+end
+
+function helpers.getAllEntities(name)
+    return celeste.Mod[modName].MethodWrappers.getAllEntities(name)
 end
 
 function helpers.giveFeather()
