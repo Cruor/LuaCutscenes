@@ -65,13 +65,13 @@ end
 helpers.wait = coroutine.yield
 
 function helpers.getLevel()
-    return engine.Level
+    return engine.Scene
 end
 
 helpers.getRoom = helpers.getLevel
 
 function helpers.getSession()
-    return engine.Level.Session
+    return engine.Scene.Session
 end
 
 -- Display minitextbox with dialog
@@ -166,10 +166,10 @@ end
 
 function helpers.playSound(name, position)
     if position then
-        celeste.Audio.Play(name, position)
+        return celeste.Audio.Play(name, position)
 
     else
-        celeste.Audio.Play(name)
+        return celeste.Audio.Play(name)
     end
 end
 
@@ -413,4 +413,9 @@ end
 -- Requires Enums
 function helpers.rumble(...)
     -- TODO - Implement
+end
+
+function helpers.makeUnskippable()
+    engine.Scene.InCutscene = false
+    engine.Scene:CancelCutscene()
 end
