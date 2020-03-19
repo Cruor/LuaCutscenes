@@ -17,6 +17,8 @@ namespace Celeste.Mod.LuaCutscenes
         private bool onlyOnce;
         private EntityData data;
 
+        private LuaCutsceneEntity cutsceneEntity;
+
         public LuaCutsceneTrigger(EntityData data, Vector2 offset) : base(data, offset)
         {
             this.data = data;
@@ -28,15 +30,35 @@ namespace Celeste.Mod.LuaCutscenes
 
         public override void OnEnter(Player player)
         {
-            if (onlyOnce && played)
+            if (cutsceneEntity != null)
+            {
+                cutsceneEntity.OnEnter(player);
+            }
+
+            if (onlyOnce || played)
             {
                 return;
             }
 
             played = true;
-            Scene.Add(new LuaCutsceneEntity(this, player, data));
+            Scene.Add(cutsceneEntity = new LuaCutsceneEntity(this, player, data));
+            cutsceneEntity.OnEnter(player);
 
             base.OnEnter(player);
+        }
+
+        public override void OnStay(Player player)
+        {
+            cutsceneEntity.OnStay(player);
+
+            base.OnStay(player);
+        }
+
+        public override void OnLeave(Player player)
+        {
+            cutsceneEntity.OnLeave(player);
+
+            base.OnLeave(player);
         }
     }
 }

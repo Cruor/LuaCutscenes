@@ -36,7 +36,7 @@ end
 
 -- Run the file and return its result
 -- Does NOT do caching like Lua `require`!
-function helpers.requireCelesteAsset(filename)
+function helpers.loadCelesteAsset(filename)
     local content = helpers.readCelesteAsset(filename)
 
     if not content then
@@ -301,8 +301,11 @@ end
 -- TODO - Unhaunt.
 function helpers.spawnBadeline(x, y, relativeToPlayer)
     local position = (relativeToPlayer or relativeToPlayer == nil) and vector2(player.Position.X + x, player.Position.Y + y) or vector2(x, y)
+    local badeline = celeste.BadelineOldsite(position, 1)
 
-    engine.Scene:Add(celeste.BadelineOldsite(position, 1))
+    engine.Scene:Add(badeline)
+
+    return badeline
 end
 
 function helpers.endCutscene()
@@ -340,32 +343,27 @@ end
 
 -- Map coordinates
 -- End position, controll
-function helpers.cassetteFlyTo(x1, y1, x2, y2)
+function helpers.cassetteFlyTo(endX, endY, controllX, controllY)
     playSound("event:/game/general/cassette_bubblereturn", vector2(engine.Scene.Camera.Position.X + 160, engine.Scene.Camera.Position.Y + 90))
 
-    if x1 and y1 and x2 and y2 then
-        player:StartCassetteFly(vector2(x1, y1), vector2(x2, y2))
+    if endX and endY and controllX and controllY then
+        player:StartCassetteFly(vector2(endX, endY), vector2(controllX, controllY))
 
     else
-        player:StartCassetteFly(vector2(x1), vector2(y1))
+        player:StartCassetteFly(vector2(endX, endY), vector2(endX, endY))
     end
 end
 
 -- Relative to player
 -- End position, controll
-function helpers.cassetteFly(x1, y1, x2, y2)
+function helpers.cassetteFly(endX, endY, controllX, controllY)
     local playerX = player.Position.X
     local playerY = player.Position.Y
-    local cameraX = engine.Scene.Camera.Position.X
-    local cameraY = engine.Scene.Camera.Position.Y
 
-    playSound("event:/game/general/cassette_bubblereturn", vector2(cameraX + 160, cameraY))
+    controllX = controllX or endX
+    controllY = controllY or endY
 
-    if not x2 and not y2 then
-        x1, y1, x2, y2 = x1[1], x1[2], y1[1], y1[2]
-    end
-
-    helpers.cassetteFlyTo(vector2(x1 + playerX, y1 + playerY), vector2(x2 + playerX, y2 + playerY));
+    helpers.cassetteFlyTo(endX + playerX, endY + playerY, controllX + playerX, controllY + playerY)
 end
 
 function helpers.setLevelFlag()
@@ -418,4 +416,12 @@ end
 function helpers.makeUnskippable()
     engine.Scene.InCutscene = false
     engine.Scene:CancelCutscene()
+end
+
+function helpers.enableRetry()
+    engine.Scene.CanRetry = true
+end
+
+function helpers.disableRetry()
+    engine.Scene.CanRetry = false
 end

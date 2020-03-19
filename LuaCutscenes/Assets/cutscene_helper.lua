@@ -10,17 +10,21 @@ local function prepareForCSharp(env, func)
     local success, onBegin, onEnd = pcall(func)
 
     if success then
+        local onEnter = env.onEnter
+        local onStay = env.onStay
+        local onLeave = env.onLeave
+
         onEnd = onEnd or env.onEnd
         onBegin = onBegin or env.onBegin
 
         onBegin = onBegin and celesteMod.LuaCoroutine({value = coroutine.create(onBegin), resume = threadProxyResume})
 
-        return onBegin, onEnd
+        return onBegin, onEnd, onEnter, onStay, onLeave
 
     else
         celesteMod.logger.log(celesteMod.logLevel.error, "Lua Cutscenes", "Failed to load cutscene in Lua: " .. onBegin)
 
-        return success, onBegin
+        return success
     end
 end
 

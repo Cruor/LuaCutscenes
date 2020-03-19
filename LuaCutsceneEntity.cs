@@ -20,6 +20,10 @@ namespace Celeste.Mod.LuaCutscenes
         private LuaFunction onEndFunction;
         private LuaTable cutsceneEnv;
 
+        private LuaFunction onEnterFunction;
+        private LuaFunction onStayFunction;
+        private LuaFunction onLeaveFunction;
+
         private EntityData data;
         private Player player;
         private LuaCutsceneTrigger cutsceneTrigger;
@@ -46,6 +50,10 @@ namespace Celeste.Mod.LuaCutscenes
                     cutsceneEnv = cutsceneResult.ElementAtOrDefault(0) as LuaTable;
                     onBeginRoutine = LuaHelper.LuaCoroutineToIEnumerator(cutsceneResult.ElementAtOrDefault(1) as LuaCoroutine);
                     onEndFunction = cutsceneResult.ElementAtOrDefault(2) as LuaFunction;
+
+                    onEnterFunction = cutsceneResult.ElementAtOrDefault(3) as LuaFunction;
+                    onStayFunction = cutsceneResult.ElementAtOrDefault(4) as LuaFunction;
+                    onLeaveFunction = cutsceneResult.ElementAtOrDefault(5) as LuaFunction;
                 }
                 catch (Exception e)
                 {
@@ -82,10 +90,22 @@ namespace Celeste.Mod.LuaCutscenes
 
         public override void OnEnd(Level level)
         {
-            if (onEndFunction != null)
-            {
-                onEndFunction.Call(new object[] { level, WasSkipped });
-            }
+            onEndFunction?.Call(new object[] { level, WasSkipped });
+        }
+
+        public void OnEnter(Player player)
+        {
+            onEnterFunction?.Call(new object[] { player });
+        }
+
+        public void OnStay(Player player)
+        {
+            onStayFunction?.Call(new object[] { player });
+        }
+
+        public void OnLeave(Player player)
+        {
+            onLeaveFunction?.Call(new object[] { player });
         }
     }
 }
