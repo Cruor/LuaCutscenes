@@ -16,9 +16,10 @@ namespace Celeste.Mod.LuaCutscenes
 
         private string filename;
 
+        private LuaTable cutsceneEnv;
+
         private IEnumerator onBeginRoutine;
         private LuaFunction onEndFunction;
-        private LuaTable cutsceneEnv;
 
         private LuaFunction onEnterFunction;
         private LuaFunction onStayFunction;
@@ -48,6 +49,7 @@ namespace Celeste.Mod.LuaCutscenes
                     object[] cutsceneResult = cutsceneLoader.Call(new object[] { filename, dataTable });
 
                     cutsceneEnv = cutsceneResult.ElementAtOrDefault(0) as LuaTable;
+
                     onBeginRoutine = LuaHelper.LuaCoroutineToIEnumerator(cutsceneResult.ElementAtOrDefault(1) as LuaCoroutine);
                     onEndFunction = cutsceneResult.ElementAtOrDefault(2) as LuaFunction;
 
@@ -90,22 +92,52 @@ namespace Celeste.Mod.LuaCutscenes
 
         public override void OnEnd(Level level)
         {
-            onEndFunction?.Call(new object[] { level, WasSkipped });
+            try
+            {
+                Everest.LuaLoader.Context.Push(cutsceneEnv);
+                Everest.LuaLoader.Context.SetUpValue(-1, 1);
+                onEndFunction?.Call(new object[] { level, WasSkipped });
+            }
+            catch (Exception e)
+            {
+                Logger.Log(LogLevel.Error, "Lua Cutscenes", $"Failed to call OnEnd: {e}");
+            }
         }
 
         public void OnEnter(Player player)
         {
-            onEnterFunction?.Call(new object[] { player });
+            try
+            {
+                onEnterFunction?.Call(new object[] { player });
+            }
+            catch (Exception e)
+            {
+                Logger.Log(LogLevel.Error, "Lua Cutscenes", $"Failed to call OnEnter: {e}");
+            }
         }
 
         public void OnStay(Player player)
         {
-            onStayFunction?.Call(new object[] { player });
+            try
+            {
+                onStayFunction?.Call(new object[] { player });
+            }
+            catch (Exception e)
+            {
+                Logger.Log(LogLevel.Error, "Lua Cutscenes", $"Failed to call OnStay: {e}");
+            }
         }
 
         public void OnLeave(Player player)
         {
-            onLeaveFunction?.Call(new object[] { player });
+            try
+            {
+                onLeaveFunction?.Call(new object[] { player });
+            }
+            catch (Exception e)
+            {
+                Logger.Log(LogLevel.Error, "Lua Cutscenes", $"Failed to call OnLeave: {e}");
+            }
         }
     }
 }

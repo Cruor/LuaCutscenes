@@ -30,12 +30,9 @@ namespace Celeste.Mod.LuaCutscenes
 
         public override void OnEnter(Player player)
         {
-            if (cutsceneEntity != null)
-            {
-                cutsceneEntity.OnEnter(player);
-            }
+            cutsceneEntity?.OnEnter(player);
 
-            if (onlyOnce || played)
+            if (onlyOnce && played)
             {
                 return;
             }
@@ -49,14 +46,14 @@ namespace Celeste.Mod.LuaCutscenes
 
         public override void OnStay(Player player)
         {
-            cutsceneEntity.OnStay(player);
+            cutsceneEntity?.OnStay(player);
 
             base.OnStay(player);
         }
 
         public override void OnLeave(Player player)
         {
-            cutsceneEntity.OnLeave(player);
+            cutsceneEntity?.OnLeave(player);
 
             base.OnLeave(player);
         }

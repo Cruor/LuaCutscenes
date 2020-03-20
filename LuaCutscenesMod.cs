@@ -25,7 +25,7 @@ namespace Celeste.Mod.LuaCutscenes
 
         public override void Load()
         {
-
+            // TODO - Warm up the Lua machinery, otherwise it lags on the first triggered cutscene
         }
 
         public override void Unload()

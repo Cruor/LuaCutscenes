@@ -132,11 +132,11 @@ function helpers.jump(duration)
     player.AutoJumpTimer = duration or 2.0
 end
 
-function helpers.changeRoom(name)
+function helpers.changeRoom(name, spawnX, spawnY)
     local level = engine.Scene
 
     level.Session.Level = name
-    level.Session.RespawnPoint = level:GetSpawnPoint(vector2(level.Bounds.Left, level.Bounds.Bottom))
+    level.Session.RespawnPoint = level:GetSpawnPoint(vector2(spawnX or level.Bounds.Left, spawnY or level.Bounds.Bottom))
     level.Session:UpdateLevelStartDashes()
 
     -- TODO - Test
@@ -152,7 +152,7 @@ function helpers.teleportTo(x, y, room)
     player.Position = vector2(x, y)
 
     if room then
-        helpers.changeRoom(room)
+        helpers.changeRoom(room, x, y)
     end
 end
 

@@ -13,7 +13,7 @@ namespace Celeste.Mod.LuaCutscenes
     {
         public static string GetFileContent(string path)
         {
-            System.IO.Stream stream = Everest.Content.Get(path)?.Stream;
+            Stream stream = Everest.Content.Get(path)?.Stream;
 
             if (stream != null)
             {
