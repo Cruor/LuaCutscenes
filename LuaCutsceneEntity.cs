@@ -94,8 +94,6 @@ namespace Celeste.Mod.LuaCutscenes
         {
             try
             {
-                Everest.LuaLoader.Context.Push(cutsceneEnv);
-                Everest.LuaLoader.Context.SetUpValue(-1, 1);
                 onEndFunction?.Call(new object[] { level, WasSkipped });
             }
             catch (Exception e)
