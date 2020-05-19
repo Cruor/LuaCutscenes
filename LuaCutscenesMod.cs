@@ -23,9 +23,16 @@ namespace Celeste.Mod.LuaCutscenes
             Instance = this;
         }
 
+        public override void LoadContent(bool firstLoad)
+        {
+            base.LoadContent(firstLoad);
+
+            LuaCutsceneEntity.WarmUp();
+        }
+
         public override void Load()
         {
-            // TODO - Warm up the Lua machinery, otherwise it lags on the first triggered cutscene
+            
         }
 
         public override void Unload()

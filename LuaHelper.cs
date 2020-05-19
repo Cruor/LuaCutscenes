@@ -53,6 +53,8 @@ namespace Celeste.Mod.LuaCutscenes
                     yield return routine.Current;
                 }
             }
+
+            yield return null;
         }
 
         public static LuaTable DictionaryToLuaTable(IDictionary<object, object> dict)

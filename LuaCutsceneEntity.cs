@@ -12,7 +12,7 @@ namespace Celeste.Mod.LuaCutscenes
 {
     class LuaCutsceneEntity : CutsceneEntity
     {
-        private static LuaFunction cutsceneLoader = Everest.LuaLoader.Require($"{LuaCutscenesMod.Instance.Metadata.Name}:/Assets/cutscene_helper") as LuaFunction;
+        private static LuaFunction cutsceneLoader = Everest.LuaLoader.Require($"{LuaCutscenesMod.Instance.Metadata.Name}:/Assets/LuaCutscenes/cutscene_helper") as LuaFunction;
 
         private string filename;
 
@@ -29,7 +29,7 @@ namespace Celeste.Mod.LuaCutscenes
         private Player player;
         private LuaCutsceneTrigger cutsceneTrigger;
 
-        // Figure out why errors are weird on bad Lua code
+        // TODO - Figure out why errors are weird on bad Lua code
         private void loadCutscene(string filename, Player player, EntityData data)
         {
             if (!string.IsNullOrEmpty(filename))
@@ -62,6 +62,11 @@ namespace Celeste.Mod.LuaCutscenes
                     Logger.Log(LogLevel.Error, "Lua Cutscenes", $"Failed to load cutscene in C#: {e}");
                 }
             }
+        }
+
+        public static void WarmUp()
+        {
+
         }
 
         public LuaCutsceneEntity(LuaCutsceneTrigger cutsceneTrigger, Player player, EntityData data, bool fadeInOnSkip = true, bool endingChapterAfter = false) : base(fadeInOnSkip, endingChapterAfter)
