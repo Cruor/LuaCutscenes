@@ -120,10 +120,16 @@ function helpers.getSession()
     return engine.Scene.Session
 end
 
---- Display minitextbox with dialog.
+--- Display textbox with dialog.
 -- @string dialog Dialog ID used for the conversation.
 function helpers.say(dialog)
     coroutine.yield(celeste.Textbox.Say(tostring(dialog), {}))
+end
+
+--- Display minitextbox with dialog.
+-- @string dialog Dialog ID used for the textbox.
+function helpers.miniTextbox(dialog)
+    engine.Scene:Add(celeste.MiniTextbox(dialog))
 end
 
 --- Player walks to the given X coordinate. This is in pixels and uses map based coordinates.
@@ -207,6 +213,13 @@ function helpers.jump(duration)
     player:Jump(true, true)
     player.AutoJump = true
     player.AutoJumpTimer = duration or 2.0
+end
+
+--- Waits until the player is on the ground.
+function helpers.waitUntilOnGround()
+    while not player:OnGround(1) do
+        wait()
+    end
 end
 
 --- Changes the room the game thinks the player is in.
