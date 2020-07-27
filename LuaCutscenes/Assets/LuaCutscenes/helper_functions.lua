@@ -34,6 +34,27 @@ local function vector2(x, y)
     end
 end
 
+local function simpleSplit(s, sep)
+    local res = {}
+
+    for part in s:gmatch("[^" .. sep .. "]+") do
+        table.insert(res, part)
+    end
+
+    return res
+end
+
+local function getClassAndField(full)
+    local parts = simpleSplit(full, "%.")
+    local field = parts[#parts]
+
+    table.remove(parts)
+
+    local class = table.concat(parts, ".")
+
+    return class, field
+end
+
 --- Get the content of a file from a Celeste asset.
 -- @string filename Filename to load. Filename should not have a extention.
 function helpers.readCelesteAsset(filename)
@@ -63,10 +84,20 @@ function helpers.loadCelesteAsset(filename)
 end
 
 --- Put debug message in the Celeste console.
--- @string message The debug message
+-- @string message The debug message.
 -- @string[opt="Lua Cutscenes"] tag The tag in the console.
 function helpers.log(message, tag)
     celesteMod.logger.log(celesteMod.LogLevel.Info, tag or "Lua Cutscenes", tostring(message))
+end
+
+--- Gets enum value
+-- @string enum String name of enum.
+-- @tparam any value string name or enum value to get.
+function helpers.getEnum(enum, value)
+    -- Work around directly getting the enum breaking proxy types
+    local class, field = getClassAndField(enum)
+
+	return luanet.enum(luanet.import_type(class)[field], value)
 end
 
 --- Pause code exection for duration seconds.
@@ -201,21 +232,35 @@ end
 --- Sets the player position to the absolute coordinates.
 -- @number x Target x coordinate.
 -- @number y Target y coordinate.
--- @string[opt] room What room the game should attempt to load after setting position.
-function helpers.teleportTo(x, y, room)
-    player.Position = vector2(x, y)
-
+-- @string[opt] room What room the game should attempt to load. If room is specified player will land at closest spawnpoint to target location.
+-- @tparam[opt] #Celeste.Player.IntroTypes introType Intro type for entering the new room. Only applies if room is specified.
+function helpers.teleportTo(x, y, room, introType)
     if room then
-        helpers.changeRoom(room, x, y)
-    end
+        if x and y then
+            celeste.Mod[modName].MethodWrappers.TeleportTo(getLevel(), player, room, introType or player.IntroType, vector2(x, y))
+
+        else
+            celeste.Mod[modName].MethodWrappers.TeleportTo(getLevel(), player, room, introType or player.IntroType)
+        end
+
+	else
+		player.Position = vector2(x, y)
+	end
 end
 
 --- Teleport the player to (x, y) pixels from current position.
--- @number x X offset on X axis
--- @number y Y offset on Y axis
--- @string[opt] room Should be set if teleport is going to another room.
-function helpers.teleport(x, y, room)
-    helpers.teleportTo(player.Position.X + x, player.Position.Y + y, room)
+-- @number x X offset on X axis.
+-- @number y Y offset on Y axis.
+-- @string[opt] room What room the game should attempt to load. If room is specified player will land at closest spawnpoint to target location.
+-- @tparam[opt] #Celeste.Player.IntroTypes introType Intro type for entering the new room. Only applies if room is specified.
+function helpers.teleport(x, y, room, introType)
+    helpers.teleportTo(player.Position.X + x, player.Position.Y + y, room, introType)
+end
+
+--- Instantly teleport the player to the same coordinates in another room seamlessly.
+-- @string room What room the game should attempt to load.
+function helpers.instantTeleport(room)
+    celeste.Mod[modName].MethodWrappers.InstantTeleport(getLevel(), player, room)
 end
 
 --- Completes the level and returns the player to the chapter screen.
@@ -456,7 +501,7 @@ function helpers.setCoreMode(mode)
 end
 
 --- Returns the current core mode.
--- @treturn #Celeste.Session.CoreMode
+-- @treturn #Celeste.Session.CoreMode.
 function helpers.getCoreMode()
     return engine.Scene.CoreMode
 end

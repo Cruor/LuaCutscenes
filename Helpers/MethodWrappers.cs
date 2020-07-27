@@ -128,5 +128,52 @@ namespace Celeste.Mod.LuaCutscenes
 
             return null;
         }
+
+        public static void TeleportTo(Scene scene, Player player, string room, Player.IntroTypes introType=Player.IntroTypes.Transition, Vector2? nearestSpawn=null)
+        {
+            Level level = scene as Level;
+
+            if (level != null)
+            {
+                level.OnEndOfFrame += () =>
+                {
+                    level.TeleportTo(player, room, introType, nearestSpawn);
+                };
+            }
+        }
+
+        public static void InstantTeleport(Scene scene, Player player, string room)
+        {
+            Level level = scene as Level;
+
+            if (level != null)
+            {
+                level.OnEndOfFrame += delegate
+                {
+                    Vector2 levelOffset = level.LevelOffset;
+                    Vector2 playerOffset = player.Position - level.LevelOffset;
+                    Vector2 cameraOffset = level.Camera.Position - level.LevelOffset;
+                    Facings facing = player.Facing;
+
+                    level.Remove(player);
+                    level.UnloadLevel();
+                    level.Session.Level = room;
+                    level.Session.RespawnPoint = level.GetSpawnPoint(new Vector2(level.Bounds.Left, level.Bounds.Top));
+                    level.Session.FirstLevel = false;
+                    level.LoadLevel(Player.IntroTypes.Transition);
+                    level.Camera.Position = level.LevelOffset + cameraOffset;
+                    level.Add(player);
+
+                    player.Position = level.LevelOffset + playerOffset;
+                    player.Facing = facing;
+                    player.Hair.MoveHairBy(level.LevelOffset - levelOffset);
+
+                    if (level.Wipe != null)
+                    {
+                        level.Wipe.Cancel();
+                    }
+                };
+            }
+        }
     }
 }

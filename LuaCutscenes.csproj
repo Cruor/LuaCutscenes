@@ -56,10 +56,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="LuaCutscenesMod.cs" />
-    <Compile Include="LuaCutsceneEntity.cs" />
-    <Compile Include="LuaCutsceneTrigger.cs" />
-    <Compile Include="LuaHelper.cs" />
-    <Compile Include="MethodWrappers.cs" />
+    <Compile Include="Entities\LuaCutsceneEntity.cs" />
+    <Compile Include="Triggers\LuaCutsceneTrigger.cs" />
+    <Compile Include="Helpers\LuaHelper.cs" />
+    <Compile Include="Helpers\MethodWrappers.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
