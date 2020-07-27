@@ -2,6 +2,7 @@
 
 *.zip
 *.pdb
+*.dll
 
 # files
 !*.cs
