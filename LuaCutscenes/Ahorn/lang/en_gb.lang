@@ -8,5 +8,5 @@
 
 # Lua Cutscene
 
-placements.triggers.luaCutscenes/luaCutsceneTrigger.tooltips.onlyOnce=If the trigger should only trigger once.
+placements.triggers.luaCutscenes/luaCutsceneTrigger.tooltips.onlyOnce=If the trigger should only trigger once per room load. This means it can trigger again after death or transitioning into the room again.
 placements.triggers.luaCutscenes/luaCutsceneTrigger.tooltips.filename=Cutscene file to load relative to mod folder. File extension is not included.
