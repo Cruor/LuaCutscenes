@@ -20,14 +20,14 @@ namespace Celeste.Mod.LuaCutscenes
         private static MethodInfo entitiesFindFirstMethodInfo = Engine.Scene.Entities.GetType().GetMethod("FindFirst");
         private static MethodInfo entitiesFindAll = Engine.Scene.Entities.GetType().GetMethod("FindAll");
 
-        public static Type GetTypeFromString(string name)
+        public static Type GetTypeFromString(string name, string prefix="Celeste.")
         {
-            return FakeAssembly.GetFakeEntryAssembly().GetType("Celeste." + name);
+            return FakeAssembly.GetFakeEntryAssembly().GetType(prefix + name);
         }
 
-        public static object GetEntity(string name)
+        public static object GetEntity(string name, string prefix = "Celeste.")
         {
-            return GetEntity(GetTypeFromString(name));
+            return GetEntity(GetTypeFromString(name, prefix));
         }
 
         public static object GetEntity(Type type)
@@ -52,9 +52,9 @@ namespace Celeste.Mod.LuaCutscenes
             return null;
         }
 
-        public static LuaTable GetEntities(string name)
+        public static LuaTable GetEntities(string name, string prefix = "Celeste.")
         {
-            return GetEntities(GetTypeFromString(name));
+            return GetEntities(GetTypeFromString(name, prefix));
         }
 
         public static LuaTable GetEntities(Type type)
@@ -80,9 +80,9 @@ namespace Celeste.Mod.LuaCutscenes
         }
 
         // Do not confuse with GetEntity, this also works on non Tracked entities
-        public static object GetFirstEntity(string name)
+        public static object GetFirstEntity(string name, string prefix = "Celeste.")
         {
-            return GetFirstEntity(GetTypeFromString(name));
+            return GetFirstEntity(GetTypeFromString(name, prefix));
         }
 
         // Do not confuse with GetEntity, this also works on non Tracked entities
@@ -105,9 +105,9 @@ namespace Celeste.Mod.LuaCutscenes
         }
 
         // Do not confuse with GetEntity, this also works on non Tracked entities
-        public static object GetAllEntities(string name)
+        public static object GetAllEntities(string name, string prefix = "Celeste.")
         {
-            return GetAllEntities(GetTypeFromString(name));
+            return GetAllEntities(GetTypeFromString(name, prefix));
         }
 
         // Do not confuse with GetEntities, this also works on non Tracked entities

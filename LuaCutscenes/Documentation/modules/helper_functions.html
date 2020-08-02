@@ -58,6 +58,14 @@
 <h2><a href="#Functions">Functions</a></h2>
 <table class="function_list">
 	<tr>
+	<td class="name" nowrap><a href="#helpers.setClassNamePrefix">helpers.setClassNamePrefix (prefix)</a></td>
+	<td class="summary">Set the prefix for getting Celeste classes.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#helpers.getClassNamePrefix">helpers.getClassNamePrefix ()</a></td>
+	<td class="summary">Get the prefix for getting Celeste classes.</td>
+	</tr>
+	<tr>
 	<td class="name" nowrap><a href="#helpers.readCelesteAsset">helpers.readCelesteAsset (filename)</a></td>
 	<td class="summary">Get the content of a file from a Celeste asset.</td>
 	</tr>
@@ -162,19 +170,19 @@
 	<td class="summary">Plays a sound.</td>
 	</tr>
 	<tr>
-	<td class="name" nowrap><a href="#helpers.getEntities">helpers.getEntities (name)</a></td>
+	<td class="name" nowrap><a href="#helpers.getEntities">helpers.getEntities (name[, prefix])</a></td>
 	<td class="summary">Gets all tracked entities by class name.</td>
 	</tr>
 	<tr>
-	<td class="name" nowrap><a href="#helpers.getEntity">helpers.getEntity (name)</a></td>
+	<td class="name" nowrap><a href="#helpers.getEntity">helpers.getEntity (name[, prefix])</a></td>
 	<td class="summary">Gets the first tracked entity by class name.</td>
 	</tr>
 	<tr>
-	<td class="name" nowrap><a href="#helpers.getAllEntities">helpers.getAllEntities (name)</a></td>
+	<td class="name" nowrap><a href="#helpers.getAllEntities">helpers.getAllEntities (name[, prefix])</a></td>
 	<td class="summary">Gets all entities by class name.</td>
 	</tr>
 	<tr>
-	<td class="name" nowrap><a href="#helpers.getFirstEntity">helpers.getFirstEntity (name)</a></td>
+	<td class="name" nowrap><a href="#helpers.getFirstEntity">helpers.getFirstEntity (name[, prefix])</a></td>
 	<td class="summary">Gets the first entity by class name.</td>
 	</tr>
 	<tr>
@@ -290,6 +298,49 @@
     <h2 class="section-header "><a name="Functions"></a>Functions</h2>
 
     <dl class="function">
+    <dt>
+    <a name = "helpers.setClassNamePrefix"></a>
+    <strong>helpers.setClassNamePrefix (prefix)</strong>
+    </dt>
+    <dd>
+    Set the prefix for getting Celeste classes.
+ By default this is "Celeste.".
+    <p></p>
+
+
+
+        <dl><strong><span class="parameter">prefix</strong></span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
+        <dd> The new prefix.</dd>
+        </li>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "helpers.getClassNamePrefix"></a>
+    <strong>helpers.getClassNamePrefix ()</strong>
+    </dt>
+    <dd>
+    Get the prefix for getting Celeste classes.
+ By default this is "Celeste.".
+    <p></p>
+
+
+
+    <h3>Returns</h3>
+    <ol>
+
+           <span class="types"><span class="type">#Monocle.Entity</span></span>
+        First entity of given class.
+    </ol>
+
+
+
+
+</dd>
     <dt>
     <a name = "helpers.readCelesteAsset"></a>
     <strong>helpers.readCelesteAsset (filename)</strong>
@@ -917,7 +968,7 @@
 </dd>
     <dt>
     <a name = "helpers.getEntities"></a>
-    <strong>helpers.getEntities (name)</strong>
+    <strong>helpers.getEntities (name[, prefix])</strong>
     </dt>
     <dd>
     Gets all tracked entities by class name.
@@ -927,7 +978,12 @@
 
         <dl><strong><span class="parameter">name</strong></span>
             <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
-        <dd> Class name of the entity, relative to "Celeste.".</dd>
+        <dd> Class name of the entity, relative to "Celeste." by default.</dd>
+        </li>
+        <dl><strong><span class="parameter">prefix</strong></span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
+         (<em>optional</em>)
+        <dd> Overrides the global class name prefix.</dd>
         </li>
 
     <h3>Returns</h3>
@@ -943,7 +999,7 @@
 </dd>
     <dt>
     <a name = "helpers.getEntity"></a>
-    <strong>helpers.getEntity (name)</strong>
+    <strong>helpers.getEntity (name[, prefix])</strong>
     </dt>
     <dd>
     Gets the first tracked entity by class name.
@@ -953,7 +1009,12 @@
 
         <dl><strong><span class="parameter">name</strong></span>
             <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
-        <dd> Class name of the entity, relative to "Celeste.".</dd>
+        <dd> Class name of the entity, relative to "Celeste." by default.</dd>
+        </li>
+        <dl><strong><span class="parameter">prefix</strong></span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
+         (<em>optional</em>)
+        <dd> Overrides the global class name prefix.</dd>
         </li>
 
     <h3>Returns</h3>
@@ -969,7 +1030,7 @@
 </dd>
     <dt>
     <a name = "helpers.getAllEntities"></a>
-    <strong>helpers.getAllEntities (name)</strong>
+    <strong>helpers.getAllEntities (name[, prefix])</strong>
     </dt>
     <dd>
     Gets all entities by class name.
@@ -979,7 +1040,12 @@
 
         <dl><strong><span class="parameter">name</strong></span>
             <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
-        <dd> Class name of the entity, relative to "Celeste.".</dd>
+        <dd> Class name of the entity, relative to "Celeste." by default.</dd>
+        </li>
+        <dl><strong><span class="parameter">prefix</strong></span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
+         (<em>optional</em>)
+        <dd> Overrides the global class name prefix.</dd>
         </li>
 
     <h3>Returns</h3>
@@ -995,7 +1061,7 @@
 </dd>
     <dt>
     <a name = "helpers.getFirstEntity"></a>
-    <strong>helpers.getFirstEntity (name)</strong>
+    <strong>helpers.getFirstEntity (name[, prefix])</strong>
     </dt>
     <dd>
     Gets the first entity by class name.
@@ -1005,7 +1071,12 @@
 
         <dl><strong><span class="parameter">name</strong></span>
             <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
-        <dd> Class name of the entity, relative to "Celeste.".</dd>
+        <dd> Class name of the entity, relative to "Celeste." by default.</dd>
+        </li>
+        <dl><strong><span class="parameter">prefix</strong></span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
+         (<em>optional</em>)
+        <dd> Overrides the global class name prefix.</dd>
         </li>
 
     <h3>Returns</h3>
@@ -1585,7 +1656,7 @@
 </div> <!-- id="container" -->
 <div id="about">
 <i>generated by <a href="http://github.com/stevedonovan/LDoc">LDoc 1.4.6</a></i>
-<i style="float:right;">Last updated 2020-07-27 17:33:23 </i>
+<i style="float:right;">Last updated 2020-08-02 11:35:07 </i>
 </div> <!-- id="about" -->
 
 </body>

@@ -14,6 +14,7 @@ local csharpVector2 = require("#microsoft.xna.framework.vector2")
 local engine = require("#monocle.engine")
 
 local modName = modMetaData.Name
+local classNamePrefix = "Celeste."
 
 local helpers = {}
 
@@ -53,6 +54,20 @@ local function getClassAndField(full)
     local class = table.concat(parts, ".")
 
     return class, field
+end
+
+--- Set the prefix for getting Celeste classes.
+-- By default this is "Celeste.".
+-- @string prefix The new prefix.
+function helpers.setClassNamePrefix(prefix)
+	classNamePrefix = prefix
+end
+
+--- Get the prefix for getting Celeste classes.
+-- By default this is "Celeste.".
+-- @treturn #Monocle.Entity First entity of given class.
+function helpers.getClassNamePrefix()
+	return classNamePrefix
 end
 
 --- Get the content of a file from a Celeste asset.
@@ -298,31 +313,35 @@ function helpers.playSound(name, position)
 end
 
 --- Gets all tracked entities by class name.
--- @string name Class name of the entity, relative to "Celeste.".
+-- @string name Class name of the entity, relative to "Celeste." by default.
+-- @string[opt] prefix Overrides the global class name prefix.
 -- @treturn {#Monocle.Entity...} Tracked entities of given class.
-function helpers.getEntities(name)
-    return celeste.Mod[modName].MethodWrappers.GetEntities(name)
+function helpers.getEntities(name, prefix)
+    return celeste.Mod[modName].MethodWrappers.GetEntities(name, prefix or classNamePrefix)
 end
 
 --- Gets the first tracked entity by class name.
--- @string name Class name of the entity, relative to "Celeste.".
+-- @string name Class name of the entity, relative to "Celeste." by default.
+-- @string[opt] prefix Overrides the global class name prefix.
 -- @treturn #Monocle.Entity First entity of given class.
-function helpers.getEntity(name)
-    return celeste.Mod[modName].MethodWrappers.GetEntity(name)
+function helpers.getEntity(name, prefix)
+    return celeste.Mod[modName].MethodWrappers.GetEntity(name, prefix or classNamePrefix)
 end
 
 --- Gets all entities by class name.
--- @string name Class name of the entity, relative to "Celeste.".
+-- @string name Class name of the entity, relative to "Celeste." by default.
+-- @string[opt] prefix Overrides the global class name prefix.
 -- @treturn {#Monocle.Entity...} Tracked entities of given class.
-function helpers.getAllEntities(name)
-    return celeste.Mod[modName].MethodWrappers.getAllEntities(name)
+function helpers.getAllEntities(name, prefix)
+    return celeste.Mod[modName].MethodWrappers.getAllEntities(name, prefix or classNamePrefix)
 end
 
 --- Gets the first entity by class name.
--- @string name Class name of the entity, relative to "Celeste.".
+-- @string name Class name of the entity, relative to "Celeste." by default.
+-- @string[opt] prefix Overrides the global class name prefix.
 -- @treturn #Monocle.Entity First entity of given class.
-function helpers.getFirstEntity(name)
-    return celeste.Mod[modName].MethodWrappers.GetFirstEntity(name)
+function helpers.getFirstEntity(name, prefix)
+    return celeste.Mod[modName].MethodWrappers.GetFirstEntity(name, prefix or classNamePrefix)
 end
 
 --- Puts player in feather state.

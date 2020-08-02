@@ -1,5 +1,5 @@
 ﻿- Name: LuaCutscenes
-  Version: 0.1.8
+  Version: 0.1.9
   DLL: "LuaCutscenes.dll"
   Dependencies:
     - Name: Everest
