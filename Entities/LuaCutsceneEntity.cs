@@ -48,18 +48,26 @@ namespace Celeste.Mod.LuaCutscenes
                 {
                     object[] cutsceneResult = cutsceneLoader.Call(new object[] { filename, dataTable });
 
-                    cutsceneEnv = cutsceneResult.ElementAtOrDefault(0) as LuaTable;
+                    if (cutsceneResult != null)
+                    {
+                        cutsceneEnv = cutsceneResult.ElementAtOrDefault(0) as LuaTable;
 
-                    onBeginRoutine = LuaHelper.LuaCoroutineToIEnumerator(cutsceneResult.ElementAtOrDefault(1) as LuaCoroutine);
-                    onEndFunction = cutsceneResult.ElementAtOrDefault(2) as LuaFunction;
+                        onBeginRoutine = LuaHelper.LuaCoroutineToIEnumerator(cutsceneResult.ElementAtOrDefault(1) as LuaCoroutine);
+                        onEndFunction = cutsceneResult.ElementAtOrDefault(2) as LuaFunction;
 
-                    onEnterFunction = cutsceneResult.ElementAtOrDefault(3) as LuaFunction;
-                    onStayFunction = cutsceneResult.ElementAtOrDefault(4) as LuaFunction;
-                    onLeaveFunction = cutsceneResult.ElementAtOrDefault(5) as LuaFunction;
+                        onEnterFunction = cutsceneResult.ElementAtOrDefault(3) as LuaFunction;
+                        onStayFunction = cutsceneResult.ElementAtOrDefault(4) as LuaFunction;
+                        onLeaveFunction = cutsceneResult.ElementAtOrDefault(5) as LuaFunction;
+                    }
+                    else
+                    {
+                        Logger.Log("Lua Cutscenes", $"Failed to load cutscene, target file does not exist: \"{filename}\"");
+                    }
+
                 }
                 catch (Exception e)
                 {
-                    Logger.Log(LogLevel.Error, "Lua Cutscenes", $"Failed to load cutscene in C#: {e}");
+                    Logger.Log(LogLevel.Error, "Lua Cutscenes", $"Failed to execute cutscene in C#: {e}");
                 }
             }
         }
