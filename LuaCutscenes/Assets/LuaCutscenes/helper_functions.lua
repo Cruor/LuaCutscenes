@@ -147,6 +147,29 @@ function helpers.miniTextbox(dialog)
     engine.Scene:Add(celeste.MiniTextbox(dialog))
 end
 
+--- Display postcard
+-- @string dialog Dialog ID or message to show in the postcard.
+-- @tparam any sfxIn effect when opening the postcard or area ID.
+-- @string[opt=nil] sfxOut Sound effect when closing the postcard. If not used then second argument is assumed to be area ID.
+function helpers.postcard(dialog, sfxIn, sfxOut)
+    local message = celeste.Dialog.Get(dialog) or dialog
+    local postcard
+
+    print(message)
+
+    if sfxOut then
+        postcard = celeste.Postcard(message, sfxIn, sfxOut)
+
+    else
+        postcard = celeste.Postcard(message, sfxIn)
+    end
+
+    getRoom():add(postcard)
+    postcard:BeforeRender()
+
+    coroutine.yield(postcard:DisplayRoutine())
+end
+
 --- Player walks to the given X coordinate. This is in pixels and uses map based coordinates.
 -- @number x X coordinate to walk to.
 -- @bool[opt=false] walkBackwards If the player should visually be walking backwards.

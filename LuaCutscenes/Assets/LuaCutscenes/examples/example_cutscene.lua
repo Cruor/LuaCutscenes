@@ -10,7 +10,7 @@
 -- Check out helper_functions.lua for examples on C# interaction.
 -- @module example_cutscene
 
---- Coroutine that does all the cutscene magic.
+--- Coroutine that is called when the cutscene starts.
 -- This invloves stuff like walking, jumping, displaying text boxes, etc.
 function onBegin()
     walk(24)

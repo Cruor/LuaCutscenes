@@ -12,7 +12,7 @@ namespace Celeste.Mod.LuaCutscenes
 {
     class LuaCutsceneEntity : CutsceneEntity
     {
-        private static LuaFunction cutsceneLoader = Everest.LuaLoader.Require($"{LuaCutscenesMod.Instance.Metadata.Name}:/Assets/LuaCutscenes/cutscene_helper") as LuaFunction;
+        private static LuaTable cutsceneHelper = Everest.LuaLoader.Require($"{LuaCutscenesMod.Instance.Metadata.Name}:/Assets/LuaCutscenes/cutscene_helper") as LuaTable;
 
         private string filename;
 
@@ -30,7 +30,7 @@ namespace Celeste.Mod.LuaCutscenes
         private LuaCutsceneTrigger cutsceneTrigger;
 
         // TODO - Figure out why errors are weird on bad Lua code
-        private void loadCutscene(string filename, Player player, EntityData data)
+        public void LoadCutscene(string filename, Player player, EntityData data)
         {
             if (!string.IsNullOrEmpty(filename))
             {
@@ -46,7 +46,7 @@ namespace Celeste.Mod.LuaCutscenes
 
                 try
                 {
-                    object[] cutsceneResult = cutsceneLoader.Call(new object[] { filename, dataTable });
+                    object[] cutsceneResult = (cutsceneHelper["getCutsceneData"] as LuaFunction).Call(new object[] { filename, dataTable });
 
                     if (cutsceneResult != null)
                     {
@@ -74,7 +74,29 @@ namespace Celeste.Mod.LuaCutscenes
 
         public static void WarmUp()
         {
+            Logger.Log("Lua Cutscenes", "Warming up cutscenes");
 
+            LuaCutsceneEntity warmupEntity = new LuaCutsceneEntity(null, null, new EntityData());
+            warmupEntity.LoadCutscene("Assets/LuaCutscenes/warmup_cutscene", null, null);
+
+            Coroutine beginCoroutine = new Coroutine(warmupEntity.onBeginWrapper(null));
+
+            warmupEntity.OnEnter(null);
+            warmupEntity.OnStay(null);
+            warmupEntity.OnLeave(null);
+
+            try
+            {
+                while (!beginCoroutine.Finished)
+                {
+                    beginCoroutine.Update();
+                }
+            }
+            catch
+            {
+                // Do nothing
+                // The cutscene will crash because the level doesn't exist
+            }
         }
 
         public LuaCutsceneEntity(LuaCutsceneTrigger cutsceneTrigger, Player player, EntityData data, bool fadeInOnSkip = true, bool endingChapterAfter = false) : base(fadeInOnSkip, endingChapterAfter)
@@ -85,7 +107,7 @@ namespace Celeste.Mod.LuaCutscenes
 
             filename = data.Attr("filename", "");
 
-            loadCutscene(filename, player, data);
+            LoadCutscene(filename, player, data);
         }
 
         private IEnumerator onBeginWrapper(Level level)

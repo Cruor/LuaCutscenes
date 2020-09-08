@@ -55,6 +55,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Entities\LuaTalker.cs" />
     <Compile Include="LuaCutscenesMod.cs" />
     <Compile Include="Entities\LuaCutsceneEntity.cs" />
     <Compile Include="Triggers\LuaCutsceneTrigger.cs" />

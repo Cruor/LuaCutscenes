@@ -1,12 +1,15 @@
-# -- Entity and Trigger Tooltips -- 
+# -- Entity and Trigger Tooltips --
 #    placements.entities.entityName.tooltips.attr=Tooltip
 #    placements.triggers.triggerName.tooltips.attr=Tooltip
 
-# -- Entities -- 
-
-# -- Triggers -- 
+# -- Entities --
 
 # Lua Cutscene
+placements.entities.luaCutscenes/luaTalker.tooltips.onlyOnce=If the talker should be deactivated after activation. Entering the room again or dying reactivates the talker.
+placements.entities.luaCutscenes/luaTalker.tooltips.filename=Cutscene file to load relative to mod folder. File extension is not included.
 
+# -- Triggers --
+
+# Lua Cutscene
 placements.triggers.luaCutscenes/luaCutsceneTrigger.tooltips.onlyOnce=If the trigger should only trigger once per room load. This means it can trigger again after death or transitioning into the room again.
 placements.triggers.luaCutscenes/luaCutsceneTrigger.tooltips.filename=Cutscene file to load relative to mod folder. File extension is not included.
