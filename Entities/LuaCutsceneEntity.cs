@@ -133,7 +133,8 @@ namespace Celeste.Mod.LuaCutscenes
             }
             catch (Exception e)
             {
-                Logger.Log(LogLevel.Error, "Lua Cutscenes", $"Failed to call OnEnd: {e}");
+                Logger.Log(LogLevel.Error, "Lua Cutscenes", "Failed to call OnEnd");
+                Logger.LogDetailed(e);
             }
         }
 
@@ -145,7 +146,8 @@ namespace Celeste.Mod.LuaCutscenes
             }
             catch (Exception e)
             {
-                Logger.Log(LogLevel.Error, "Lua Cutscenes", $"Failed to call OnEnter: {e}");
+                Logger.Log(LogLevel.Error, "Lua Cutscenes", "Failed to call OnEnter");
+                Logger.LogDetailed(e);
             }
         }
 
@@ -157,7 +159,8 @@ namespace Celeste.Mod.LuaCutscenes
             }
             catch (Exception e)
             {
-                Logger.Log(LogLevel.Error, "Lua Cutscenes", $"Failed to call OnStay: {e}");
+                Logger.Log(LogLevel.Error, "Lua Cutscenes", "Failed to call OnStay");
+                Logger.LogDetailed(e);
             }
         }
 
@@ -169,7 +172,8 @@ namespace Celeste.Mod.LuaCutscenes
             }
             catch (Exception e)
             {
-                Logger.Log(LogLevel.Error, "Lua Cutscenes", $"Failed to call OnLeave: {e}");
+                Logger.Log(LogLevel.Error, "Lua Cutscenes", $"Failed to call OnLeave");
+                Logger.LogDetailed(e);
             }
         }
     }

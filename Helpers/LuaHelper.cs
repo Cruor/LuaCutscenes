@@ -34,7 +34,8 @@ namespace Celeste.Mod.LuaCutscenes
             }
             catch (Exception e)
             {
-                Logger.Log(LogLevel.Error, "Lua Cutscenes", $"Failed to resume coroutine: {e}");
+                Logger.Log(LogLevel.Error, "Lua Cutscenes", $"Failed to resume coroutine");
+                Logger.LogDetailed(e);
 
                 return false;
             }
