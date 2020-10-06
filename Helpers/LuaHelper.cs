@@ -86,6 +86,8 @@ namespace Celeste.Mod.LuaCutscenes
             return table;
         }
 
+        // Attempt to eval the string if possible
+        // Returns eval result if possible, otherwise the input string
         public static object LoadArgumentsString(string arguments)
         {
             Lua lua = Everest.LuaLoader.Context;
@@ -96,7 +98,9 @@ namespace Celeste.Mod.LuaCutscenes
 
                 if (results.Length == 1)
                 {
-                    return results.First();
+                    object result = results.FirstOrDefault();
+
+                    return result ?? arguments;
                 }
                 else
                 {
