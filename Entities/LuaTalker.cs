@@ -81,10 +81,7 @@ namespace Celeste.Mod.LuaCutscenes
 
         private void onTalk(Player player)
         {
-            if (onTalkRoutine == null)
-            {
-                LoadTalker(filename, player);
-            }
+            LoadTalker(filename, player);
  
             if (onTalkRoutine != null) {
                 Add(new Coroutine(onTalkRoutine));
