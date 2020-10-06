@@ -142,11 +142,25 @@ namespace Celeste.Mod.LuaCutscenes
             }
         }
 
-        public static void InstantTeleport(Scene scene, Player player, string room)
+        public static void InstantTeleport(Scene scene, Player player, string room, bool sameRelativePosition, float positionX, float positionY)
         {
             Level level = scene as Level;
 
-            if (level != null)
+            if (level == null)
+            {
+                return;
+            }
+
+            if (String.IsNullOrEmpty(room))
+            {
+                Vector2 playerRelativeOffset = (new Vector2(positionX, positionY) - player.Position);
+
+                player.Position = new Vector2(positionX, positionY);
+                level.Camera.Position += playerRelativeOffset;
+                player.Hair.MoveHairBy(playerRelativeOffset);
+
+            }
+            else
             {
                 level.OnEndOfFrame += delegate
                 {
@@ -161,12 +175,25 @@ namespace Celeste.Mod.LuaCutscenes
                     level.Session.RespawnPoint = level.GetSpawnPoint(new Vector2(level.Bounds.Left, level.Bounds.Top));
                     level.Session.FirstLevel = false;
                     level.LoadLevel(Player.IntroTypes.Transition);
-                    level.Camera.Position = level.LevelOffset + cameraOffset;
-                    level.Add(player);
 
-                    player.Position = level.LevelOffset + playerOffset;
-                    player.Facing = facing;
-                    player.Hair.MoveHairBy(level.LevelOffset - levelOffset);
+                    if (sameRelativePosition)
+                    {
+                        level.Camera.Position = level.LevelOffset + cameraOffset;
+                        level.Add(player);
+                        player.Position = level.LevelOffset + playerOffset;
+                        player.Facing = facing;
+                        player.Hair.MoveHairBy(level.LevelOffset - levelOffset);
+                    }
+                    else
+                    {
+                        Vector2 playerRelativeOffset  = (new Vector2(positionX, positionY) - level.LevelOffset - playerOffset);
+
+                        level.Camera.Position = level.LevelOffset + cameraOffset + playerRelativeOffset;
+                        level.Add(player);
+                        player.Position = new Vector2(positionX, positionY);
+                        player.Facing = facing;
+                        player.Hair.MoveHairBy(level.LevelOffset - levelOffset + playerRelativeOffset);
+                    }
 
                     if (level.Wipe != null)
                     {

@@ -306,10 +306,36 @@ function helpers.teleport(x, y, room, introType)
     helpers.teleportTo(player.Position.X + x, player.Position.Y + y, room, introType)
 end
 
+--- Instantly teleport the player seamlessly.
+--  Teleport player to (x, y) position, in pixels.
+-- Room name as only argument will seamlessly teleport to that room at the same relative position.
+-- @tparam any x X offset on X axis if number. Target room if string.
+-- @number y Y offset on Y axis.
+-- @string[opt] room What room the game should attempt to load. By default same room.
+function helpers.instantTeleportTo(x, y, room)
+    if x and y then
+        -- Provide own position
+        celeste.Mod[modName].MethodWrappers.InstantTeleport(getLevel(), player, room, false, x, y)
+
+    else
+        -- Keep releative room position
+        celeste.Mod[modName].MethodWrappers.InstantTeleport(getLevel(), player, x, true, 0, 0)
+    end
+end
+
 --- Instantly teleport the player to the same coordinates in another room seamlessly.
--- @string room What room the game should attempt to load.
-function helpers.instantTeleport(room)
-    celeste.Mod[modName].MethodWrappers.InstantTeleport(getLevel(), player, room)
+-- Teleport player (x, y) pixels from current position.
+-- Room name as only argument will seamlessly teleport to that room at the same relative position.
+-- @tparam any x X offset on X axis if number. Target room if string.
+-- @number y Y offset on Y axis.
+-- @string[opt] room What room the game should attempt to load. By default same room.
+function helpers.instantTeleport(x, y, room)
+    if x and y then
+        helpers.instantTeleportTo(player.Position.X + x, player.Position.Y + y, room)
+
+    else
+        helpers.instantTeleportTo(x, y, room)
+    end
 end
 
 --- Completes the level and returns the player to the chapter screen.
