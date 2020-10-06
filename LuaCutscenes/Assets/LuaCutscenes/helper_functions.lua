@@ -315,11 +315,11 @@ end
 function helpers.instantTeleportTo(x, y, room)
     if x and y then
         -- Provide own position
-        celeste.Mod[modName].MethodWrappers.InstantTeleport(getLevel(), player, room, false, x, y)
+        celeste.Mod[modName].MethodWrappers.InstantTeleport(getLevel(), player, room or "", false, x, y)
 
     else
         -- Keep releative room position
-        celeste.Mod[modName].MethodWrappers.InstantTeleport(getLevel(), player, x, true, 0, 0)
+        celeste.Mod[modName].MethodWrappers.InstantTeleport(getLevel(), player, x or "", true, 0.0, 0.0)
     end
 end
 
