@@ -155,8 +155,6 @@ function helpers.postcard(dialog, sfxIn, sfxOut)
     local message = celeste.Dialog.Get(dialog) or dialog
     local postcard
 
-    print(message)
-
     if sfxOut then
         postcard = celeste.Postcard(message, sfxIn, sfxOut)
 
