@@ -15,6 +15,7 @@ namespace Celeste.Mod.LuaCutscenes
         private static LuaTable cutsceneHelper = Everest.LuaLoader.Require($"{LuaCutscenesMod.Instance.Metadata.Name}:/Assets/LuaCutscenes/cutscene_helper") as LuaTable;
 
         private string filename;
+        private string argumentsString;
 
         private LuaTable cutsceneEnv;
 
@@ -40,6 +41,7 @@ namespace Celeste.Mod.LuaCutscenes
                     { "cutsceneEntity", this },
                     { "cutsceneTrigger", cutsceneTrigger },
                     { "modMetaData", LuaCutscenesMod.Instance.Metadata },
+                    { "arguments", LuaHelper.LoadArgumentsString(argumentsString) }
                 };
 
                 LuaTable dataTable = LuaHelper.DictionaryToLuaTable(cutsceneData);
@@ -106,6 +108,7 @@ namespace Celeste.Mod.LuaCutscenes
             this.cutsceneTrigger = cutsceneTrigger;
 
             filename = data.Attr("filename", "");
+            argumentsString = data.Attr("arguments", "");
 
             LoadCutscene(filename, player, data);
         }

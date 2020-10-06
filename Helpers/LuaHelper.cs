@@ -85,5 +85,28 @@ namespace Celeste.Mod.LuaCutscenes
 
             return table;
         }
+
+        public static object LoadArgumentsString(string arguments)
+        {
+            Lua lua = Everest.LuaLoader.Context;
+
+            try
+            {
+                object[] results = lua.DoString("return " + arguments);
+
+                if (results.Length == 1)
+                {
+                    return results.First();
+                }
+                else
+                {
+                    return ListToLuaTable(results);
+                }
+            }
+            catch
+            {
+                return arguments;
+            }
+        }
     }
 }

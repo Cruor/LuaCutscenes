@@ -15,6 +15,7 @@ namespace Celeste.Mod.LuaCutscenes
         private static LuaTable cutsceneHelper = Everest.LuaLoader.Require($"{LuaCutscenesMod.Instance.Metadata.Name}:/Assets/LuaCutscenes/cutscene_helper") as LuaTable;
 
         private string filename;
+        private string argumentsString;
         private bool onlyOnce;
 
         private LuaTable cutsceneEnv;
@@ -35,6 +36,7 @@ namespace Celeste.Mod.LuaCutscenes
                     { "player", player },
                     { "talker", this },
                     { "modMetaData", LuaCutscenesMod.Instance.Metadata },
+                    { "arguments", LuaHelper.LoadArgumentsString(argumentsString) }
                 };
 
                 LuaTable dataTable = LuaHelper.DictionaryToLuaTable(cutsceneData);
@@ -68,6 +70,7 @@ namespace Celeste.Mod.LuaCutscenes
 
             onlyOnce = data.Bool("onlyOnce", true);
             filename = data.Attr("filename", "");
+            argumentsString = data.Attr("arguments", "");
 
             Add(talker = new TalkComponent(new Rectangle(0, 0, data.Width, data.Height), data.Nodes.First() + offset - Position, onTalk)
             {
