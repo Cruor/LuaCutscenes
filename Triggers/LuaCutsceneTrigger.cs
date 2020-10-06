@@ -15,6 +15,7 @@ namespace Celeste.Mod.LuaCutscenes
     {
         private bool played;
         private bool onlyOnce;
+        private bool unskippable;
         private EntityData data;
 
         private LuaCutsceneEntity cutsceneEntity;
@@ -24,6 +25,7 @@ namespace Celeste.Mod.LuaCutscenes
             this.data = data;
 
             onlyOnce = data.Bool("onlyOnce", true);
+            unskippable = data.Bool("unskippable", false);
 
             played = false;
         }
@@ -38,7 +40,7 @@ namespace Celeste.Mod.LuaCutscenes
             }
 
             played = true;
-            Scene.Add(cutsceneEntity = new LuaCutsceneEntity(this, player, data));
+            Scene.Add(cutsceneEntity = new LuaCutsceneEntity(this, player, data, unskippable: unskippable));
             cutsceneEntity.OnEnter(player);
 
             base.OnEnter(player);

@@ -16,6 +16,7 @@ namespace Celeste.Mod.LuaCutscenes
 
         private string filename;
         private string argumentsString;
+        private bool unskippable;
 
         private LuaTable cutsceneEnv;
 
@@ -101,11 +102,12 @@ namespace Celeste.Mod.LuaCutscenes
             }
         }
 
-        public LuaCutsceneEntity(LuaCutsceneTrigger cutsceneTrigger, Player player, EntityData data, bool fadeInOnSkip = true, bool endingChapterAfter = false) : base(fadeInOnSkip, endingChapterAfter)
+        public LuaCutsceneEntity(LuaCutsceneTrigger cutsceneTrigger, Player player, EntityData data, bool fadeInOnSkip = true, bool endingChapterAfter = false, bool unskippable = false) : base(fadeInOnSkip, endingChapterAfter)
         {
             this.player = player;
             this.data = data;
             this.cutsceneTrigger = cutsceneTrigger;
+            this.unskippable = unskippable;
 
             filename = data.Attr("filename", "");
             argumentsString = data.Attr("arguments", "");
@@ -125,6 +127,12 @@ namespace Celeste.Mod.LuaCutscenes
             if (onBeginRoutine != null)
             {
                 Add(new Coroutine(onBeginWrapper(level)));
+
+                if (unskippable)
+                {
+                    level.InCutscene = false;
+                    level.CancelCutscene();
+                }
             }
         }
 
