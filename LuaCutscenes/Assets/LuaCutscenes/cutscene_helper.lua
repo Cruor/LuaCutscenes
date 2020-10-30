@@ -48,6 +48,8 @@ end
 
 local environmentCode = [[
 
+_ENV.helpers = helpers
+
 for k, v in pairs(helpers) do
     _ENV[k] = v
 end

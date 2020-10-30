@@ -87,7 +87,11 @@ function helpers.loadCelesteAsset(filename)
         return
     end
 
-    local func = load(content, nil, nil, {})
+    local env = {}
+
+    setmetatable(env, {__index = _ENV})
+
+    local func = load(content, nil, nil, env)
     local success, result = pcall(func)
 
     if success then
