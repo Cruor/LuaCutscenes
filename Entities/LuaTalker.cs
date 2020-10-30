@@ -17,9 +17,13 @@ namespace Celeste.Mod.LuaCutscenes
         private string filename;
         private string argumentsString;
         private bool onlyOnce;
+        private bool unskippable;
+
+        private bool wasSkipped;
 
         private LuaTable cutsceneEnv;
         private IEnumerator onTalkRoutine;
+        private LuaFunction onEndFunction;
 
         private TalkComponent talker;
         private EntityData data;
@@ -50,6 +54,7 @@ namespace Celeste.Mod.LuaCutscenes
                         cutsceneEnv = cutsceneResult.ElementAtOrDefault(0) as LuaTable;
 
                         onTalkRoutine = LuaHelper.LuaCoroutineToIEnumerator(cutsceneResult.ElementAtOrDefault(1) as LuaCoroutine);
+                        onEndFunction = cutsceneResult.ElementAtOrDefault(2) as LuaFunction;
                     }
                     else
                     {
@@ -71,6 +76,9 @@ namespace Celeste.Mod.LuaCutscenes
             onlyOnce = data.Bool("onlyOnce", true);
             filename = data.Attr("filename", "");
             argumentsString = data.Attr("arguments", "");
+            unskippable = data.Bool("unskippable", false);
+
+            wasSkipped = false;
 
             Add(talker = new TalkComponent(new Rectangle(0, 0, data.Width, data.Height), data.Nodes.First() + offset - Position, onTalk)
             {
@@ -79,18 +87,46 @@ namespace Celeste.Mod.LuaCutscenes
             });
         }
 
+        private void skipCutscene(Level level)
+        {
+            wasSkipped = true;
+
+            onEnd(level);
+        }
+
+        private IEnumerator onBeginWrapper(Level level)
+        {
+            yield return onTalkRoutine;
+
+            onEnd(level);
+        }
+
         private void onTalk(Player player)
         {
             LoadTalker(filename, player);
  
             if (onTalkRoutine != null) {
-                Add(new Coroutine(onTalkRoutine));
+                Level level = SceneAs<Level>();
+
+                if (!unskippable)
+                {
+                    level.StartCutscene(skipCutscene);
+                }
+
+                Add(new Coroutine(onBeginWrapper(level)));
 
                 if (onlyOnce)
                 {
                     shouldDisable = true;
                 }
             }
+        }
+
+        private void onEnd(Level level)
+        {
+            onEndFunction?.Call(new object[] { level, wasSkipped });
+
+            level.EndCutscene();
         }
 
         public override void Update()

@@ -29,13 +29,15 @@ local function prepareCutsene(env, func)
 end
 
 local function prepareTalker(env, func)
-    local success, onTalk = pcall(func)
+    local success, onTalk, onEnd = pcall(func)
 
     if success then
         onTalk = onTalk or env.onTalk
+        onEnd = onEnd or env.onEnd
+
         onTalk = onTalk and celesteMod.LuaCoroutine({value = coroutine.create(onTalk), resume = threadProxyResume})
 
-        return onTalk
+        return onTalk, onEnd
 
     else
         celesteMod.logger.log(celesteMod.logLevel.error, "Lua Cutscenes", "Failed to load cutscene in Lua: " .. onTalk)

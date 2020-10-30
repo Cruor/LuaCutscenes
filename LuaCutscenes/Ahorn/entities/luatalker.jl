@@ -2,7 +2,7 @@ module LuaCutscenesLuaTalker
 
 using ..Ahorn, Maple
 
-@mapdef Entity "luaCutscenes/luaTalker" LuaTalker(x::Integer, y::Integer, width::Integer=Maple.defaultTriggerWidth, height::Integer=Maple.defaultTriggerHeight, onlyOnce::Bool=false, filename::String="", arguments::String="")
+@mapdef Entity "luaCutscenes/luaTalker" LuaTalker(x::Integer, y::Integer, width::Integer=Maple.defaultTriggerWidth, height::Integer=Maple.defaultTriggerHeight, onlyOnce::Bool=false, filename::String="", arguments::String="", unskippable::Bool=false)
 
 const placements = Ahorn.PlacementDict(
     "Lua Talker (Lua Cutscenes)" => Ahorn.EntityPlacement(

@@ -7,7 +7,8 @@
 # Lua Talker
 placements.entities.luaCutscenes/luaTalker.tooltips.onlyOnce=If the talker should be deactivated after activation. Entering the room again or dying reactivates the talker.
 placements.entities.luaCutscenes/luaTalker.tooltips.filename=Cutscene file to load relative to mod folder. File extension is not included.
-placements.triggers.luaCutscenes/luaTalker.tooltips.arguments=Extra arguments passed to the cutscene. Available as `arguments` in code. Attempts to evaluate to Lua code if possible.
+placements.entities.luaCutscenes/luaTalker.tooltips.arguments=Extra arguments passed to the talker. Available as `arguments` in code. Attempts to evaluate to Lua code if possible.
+placements.entities.luaCutscenes/luaTalker.tooltips.unskippable=Whether the talker should be skippable from the start or not.
 
 
 # -- Triggers --
