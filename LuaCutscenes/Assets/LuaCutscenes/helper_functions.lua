@@ -151,6 +151,14 @@ function helpers.miniTextbox(dialog)
     engine.Scene:Add(celeste.MiniTextbox(dialog))
 end
 
+--- Allow the user to select one of several minitextboxes, a la 6a intro
+-- @string ... Dialog IDs for each of the textboses as varargs.
+-- @treturn number The index of the option the player chose
+function helpers.choice(...)
+    coroutine.yield(celesteMod[modName].ChoicePrompt.Prompt(...))
+    return celesteMod[modName].ChoicePrompt.Choice
+end
+
 --- Display postcard
 -- @string dialog Dialog ID or message to show in the postcard.
 -- @tparam any sfxIn effect when opening the postcard or area ID.

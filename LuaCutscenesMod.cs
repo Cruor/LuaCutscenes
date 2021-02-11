@@ -32,12 +32,12 @@ namespace Celeste.Mod.LuaCutscenes
 
         public override void Load()
         {
-            
+            ChoicePrompt.Load();
         }
 
         public override void Unload()
         {
-
+            ChoicePrompt.Unload();
         }
     }
 }
