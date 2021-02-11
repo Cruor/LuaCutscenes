@@ -156,7 +156,7 @@ end
 -- @treturn number The index of the option the player chose
 function helpers.choice(...)
     coroutine.yield(celesteMod[modName].ChoicePrompt.Prompt(...))
-    return celesteMod[modName].ChoicePrompt.Choice
+    return celesteMod[modName].ChoicePrompt.Choice + 1
 end
 
 --- Display postcard

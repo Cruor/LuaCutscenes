@@ -15,7 +15,7 @@
 function onTalk()
     walk(24)
     walk(-24, true, 0.1)
-    if choice("CH6_THEO_ASK_VACATION", "CH6_THEO_ASK_FAMILY") == 0 then
+    if choice("CH6_THEO_ASK_VACATION", "CH6_THEO_ASK_FAMILY") == 1 then
         say("CH6_THEO_SAY_VACATION")
     else
         say("CH6_THEO_SAY_FAMILY")
