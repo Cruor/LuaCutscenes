@@ -113,10 +113,16 @@ end
 -- @string enum String name of enum.
 -- @tparam any value string name or enum value to get.
 function helpers.getEnum(enum, value)
-    -- Work around directly getting the enum breaking proxy types
-    local class, field = getClassAndField(enum)
+    local enumValue = luanet.enum(luanet.import_type(enum), value)
 
-	return luanet.enum(luanet.import_type(class)[field], value)
+    -- Check for enum on class
+    if not enumValue then
+        local class, field = getClassAndField(enum)
+
+        enumValue = luanet.enum(luanet.import_type(class)[field], value)
+    end
+
+	return enumValue
 end
 
 --- Pause code exection for duration seconds.
@@ -295,11 +301,27 @@ end
 -- @number x Target x coordinate.
 -- @number y Target y coordinate.
 -- @string[opt] room What room the game should attempt to load. If room is specified player will land at closest spawnpoint to target location.
--- @tparam[opt] #Celeste.Player.IntroTypes introType Intro type for entering the new room. Only applies if room is specified.
+-- @tparam[opt] any introType intro type to use, can be either a #Celeste.Player.IntroTypes enum or a string
 function helpers.teleportTo(x, y, room, introType)
+    if type(introType) == "string" then
+        introType = getEnum("Celeste.Player.IntroTypes", introType)
+    end
+
     if room then
+        local mapData = engine.Scene.Session.MapData
+        local levelData = mapData:getAt(vector2(x, y))
+
+        -- TeleportTo adds the new room offset for spawnpoint check, we have to remove this
+        local offsetX, offsetY = 0, 0
+
+        if levelData then
+            local bounds = levelData.bounds
+
+            offsetX, offsetY = bounds.X, bounds.Y
+        end
+
         if x and y then
-            celeste.Mod[modName].MethodWrappers.TeleportTo(getLevel(), player, room, introType or player.IntroType, vector2(x, y))
+            celeste.Mod[modName].MethodWrappers.TeleportTo(getLevel(), player, room, introType or player.IntroType, vector2(x - offsetX, y - offsetY))
 
         else
             celeste.Mod[modName].MethodWrappers.TeleportTo(getLevel(), player, room, introType or player.IntroType)
@@ -314,7 +336,7 @@ end
 -- @number x X offset on X axis.
 -- @number y Y offset on Y axis.
 -- @string[opt] room What room the game should attempt to load. If room is specified player will land at closest spawnpoint to target location.
--- @tparam[opt] #Celeste.Player.IntroTypes introType Intro type for entering the new room. Only applies if room is specified.
+-- @tparam[opt] any introType intro type to use, can be either a #Celeste.Player.IntroTypes enum or a string. Only applies if room is specified.
 function helpers.teleport(x, y, room, introType)
     helpers.teleportTo(player.Position.X + x, player.Position.Y + y, room, introType)
 end
@@ -684,7 +706,7 @@ function helpers.makeUnskippable()
     engine.Scene:CancelCutscene()
 end
 
---- Enablies retrying from menu.
+--- Enables retrying from menu.
 function helpers.enableRetry()
     engine.Scene.CanRetry = true
 end
