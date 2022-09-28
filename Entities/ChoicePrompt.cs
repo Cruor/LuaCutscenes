@@ -94,7 +94,7 @@ namespace Celeste.Mod.LuaCutscenes {
                 foreach (var opt in this.Options) {
                     opt.Ease = Calc.Approach(opt.Ease, 1f, Engine.DeltaTime * 4);
                     opt.Highlight = Calc.Approach(opt.Highlight, idx == this.Index ? 1f : 0f, Engine.DeltaTime * 4);
-                    opt.Portrait.Update();
+                    opt.Portrait?.Update();
                     idx++;
                 }
             }
@@ -118,6 +118,7 @@ namespace Celeste.Mod.LuaCutscenes {
             
             int maxLineWidth = 1828;
             this.Text = FancyText.Parse(Dialog.Get(this.Key), maxLineWidth, -1);
+            this.Textbox = "textbox/madeline_ask";
             foreach (FancyText.Node node in this.Text.Nodes) {
                 if (!(node is FancyText.Portrait portrait)) {
                     continue;
@@ -127,12 +128,21 @@ namespace Celeste.Mod.LuaCutscenes {
                 this.Portrait.Play(portrait.IdleAnimation);
                 this.PortraitSide = (Facings) portrait.Side;
                 this.Textbox = "textbox/" + portrait.Sprite + "_ask";
+
                 XmlElement xml = GFX.PortraitsSpriteBank.SpriteData[portrait.SpriteId].Sources[0].XML;
                 if (xml != null) {
+                    string textboxFallback = "textbox/" + xml.Attr("textbox", portrait.Sprite) + "_ask";
+
                     this.PortraitSize = xml.AttrInt("size", 160);
+                    this.Textbox = xml.Attr("ask_textbox", textboxFallback);
                 }
 
                 break;
+            }
+
+            if (!GFX.Portraits.Has(this.Textbox))
+            {
+                this.Textbox = "textbox/madeline_ask";
             }
         }
 
@@ -150,7 +160,11 @@ namespace Celeste.Mod.LuaCutscenes {
 
             Color color1 = Color.Lerp(Color.Gray, Color.White, highlightEase) * introEase;
             float alpha = MathHelper.Lerp(0.6f, 1f, highlightEase) * introEase;
-            GFX.Portraits[this.Textbox].Draw(position, Vector2.Zero, color1);
+
+            if (this.Textbox != null)
+            {
+                GFX.Portraits[this.Textbox]?.Draw(position, Vector2.Zero, color1);
+            }
 
             Facings facings = this.PortraitSide;
             if (SaveData.Instance != null && SaveData.Instance.Assists.MirrorMode) {
@@ -158,16 +172,20 @@ namespace Celeste.Mod.LuaCutscenes {
             }
 
             float num2 = 100f;
-            this.Portrait.Scale = Vector2.One * (num2 / this.PortraitSize);
-            if (facings == Facings.Right) {
-                this.Portrait.Position = position + new Vector2((float) (1380.0 - num2 * 0.5), 70f);
-                this.Portrait.Scale.X *= -1f;
-            } else {
-                this.Portrait.Position = position + new Vector2((float) (20.0 + num2 * 0.5), 70f);
-            }
+            
+            if (this.Portrait != null)
+            {
+                this.Portrait.Scale = Vector2.One * (num2 / this.PortraitSize);
+                if (facings == Facings.Right) {
+                    this.Portrait.Position = position + new Vector2((float) (1380.0 - num2 * 0.5), 70f);
+                    this.Portrait.Scale.X *= -1f;
+                } else {
+                    this.Portrait.Position = position + new Vector2((float) (20.0 + num2 * 0.5), 70f);
+                }
 
-            this.Portrait.Color = Color.White * (float) (0.5 + highlightEase * 0.5) * introEase;
-            this.Portrait.Render();
+                this.Portrait.Color = Color.White * (float) (0.5 + highlightEase * 0.5) * introEase;
+                this.Portrait.Render();
+            }
 
             float num3 = (float) ((140.0 - ActiveFont.LineHeight * 0.699999988079071) / 2.0);
             Vector2 position1 = new Vector2(0.0f, position.Y + 70f);
