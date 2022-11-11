@@ -1,68 +1,66 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
-  <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{F6F6BE99-EC4E-4611-A5AC-4F9BCC79B138}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Celeste.Mod.LuaCutscenes</RootNamespace>
-    <AssemblyName>LuaCutscenes</AssemblyName>
-    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <Deterministic>true</Deterministic>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <ItemGroup>
-    <Reference Include="Celeste">
-      <HintPath>..\..\..\..\Games\EGS\Celeste\Celeste.exe</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="FNA">
-      <HintPath>..\..\..\..\Games\EGS\Celeste\FNA.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="MMHOOK_Celeste">
-      <HintPath>..\..\..\..\Games\EGS\Celeste\MMHOOK_Celeste.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="NLua">
-      <HintPath>..\..\..\..\Games\EGS\Celeste\NLua.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.Xml" />
-    <Reference Include="YamlDotNet">
-      <HintPath>..\..\..\..\Games\EGS\Celeste\YamlDotNet.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="Entities\LuaTalker.cs" />
-    <Compile Include="LuaCutscenesMod.cs" />
-    <Compile Include="Entities\LuaCutsceneEntity.cs" />
-    <Compile Include="Entities\ChoicePrompt.cs" />
-    <Compile Include="Triggers\LuaCutsceneTrigger.cs" />
-    <Compile Include="Helpers\LuaHelper.cs" />
-    <Compile Include="Helpers\MethodWrappers.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net452</TargetFramework>
+        <AssemblyName>LuaCutscenes</AssemblyName>
+        <RootNamespace>Celeste.Mod.LuaCutscenes</RootNamespace>
+        <LangVersion>latest</LangVersion>
+        <CelestePrefix Condition="'$(CelestePrefix)' == '' And Exists('..\..\Celeste.exe')">..\..</CelestePrefix>
+        <CelestePrefix Condition="'$(CelestePrefix)' == '' And Exists('..\..\..\Celeste.exe')">..\..\..</CelestePrefix>
+        <CelestePrefix Condition="'$(CelestePrefix)' == ''">lib-stripped</CelestePrefix>
+        <CelesteType Condition="'$(CelesteType)' == '' And Exists('$(CelestePrefix)\BuildIsXNA.txt')">XNA</CelesteType>
+        <CelesteType Condition="'$(CelesteType)' == ''">FNA</CelesteType>
+        <XNAPath Condition="'$(XNAPath)' == ''">$(WINDIR)\Microsoft.NET\assembly\GAC_32\{0}\v4.0_4.0.0.0__842cf8be1de50553\{0}.dll</XNAPath>
+        <Deterministic>true</Deterministic>
+    </PropertyGroup>
+
+    <!--Disable "Copy Local" for all references-->
+    <ItemDefinitionGroup>
+        <PackageReference PrivateAssets="all" ExcludeAssets="runtime" />
+        <Reference Private="false" />
+    </ItemDefinitionGroup>
+
+    <ItemGroup>
+        <PackageReference Include="MonoMod.RuntimeDetour" Version="22.01.04.03" PrivateAssets="all" ExcludeAssets="runtime" />
+        <PackageReference Include="NLua" Version="1.4.25" />
+        <PackageReference Include="YamlDotNet" Version="8.1.2" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <Reference Include="$(CelestePrefix)\Celeste.exe">
+            <Private>false</Private>
+        </Reference>
+        <Reference Include="$(CelestePrefix)\MMHOOK_Celeste.dll">
+            <Private>false</Private>
+        </Reference>
+    </ItemGroup>
+
+    <Choose>
+        <When Condition="'$(CelesteType)' == 'FNA'">
+            <ItemGroup>
+                <Reference Include="$(CelestePrefix)\FNA.dll">
+                    <Private>false</Private>
+                </Reference>
+            </ItemGroup>
+        </When>
+
+        <When Condition="'$(CelesteType)' == 'XNA'">
+            <ItemGroup>
+                <Reference Include="$([System.String]::Format('$(XNAPath)', 'Microsoft.Xna.Framework'))">
+                    <Private>false</Private>
+                </Reference>
+                <Reference Include="$([System.String]::Format('$(XNAPath)', 'Microsoft.Xna.Framework.Game'))">
+                    <Private>false</Private>
+                </Reference>
+                <Reference Include="$([System.String]::Format('$(XNAPath)', 'Microsoft.Xna.Framework.Graphics'))">
+                    <Private>false</Private>
+                </Reference>
+            </ItemGroup>
+        </When>
+    </Choose>
+
+    <Target Name="CopyFiles" AfterTargets="Build">
+        <Copy SourceFiles="$(OutputPath)\$(AssemblyName).dll" DestinationFolder="bin" />
+    </Target>
+
 </Project>

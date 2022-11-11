@@ -104,7 +104,7 @@ namespace Celeste.Mod.LuaCutscenes
         private void onTalk(Player player)
         {
             LoadTalker(filename, player);
- 
+
             if (onTalkRoutine != null) {
                 Level level = SceneAs<Level>();
 
