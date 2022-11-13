@@ -2,30 +2,30 @@ name: .NET Core
 
 on:
   push:
-    branches: [ master ]
+    branches: [master]
   pull_request:
-    branches: [ master ]
+    branches: [master]
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
-    - name: Setup .NET Core
-      uses: actions/setup-dotnet@v1
-    - name: Install dependencies
-      run: dotnet restore
-    - name: Build
-      run: dotnet build LuaCutscenes.csproj --configuration Release --no-restore
-    - name: Upload Artifact
-      uses: actions/upload-artifact@v2
-      with:
-        name: LuaCutscenes
-        path: |
-          everest.yaml
-          bin/LuaCutscenes.dll
-          Ahorn
-          Assets
-          Graphics
-          Loenn
+      - uses: actions/checkout@v2
+      - name: Setup .NET Core
+        uses: actions/setup-dotnet@v1
+      - name: Install dependencies
+        run: dotnet restore
+      - name: Build
+        run: dotnet build LuaCutscenes.csproj --configuration Release --no-restore
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: LuaCutscenes
+          path: |
+            everest.yaml
+            bin/LuaCutscenes.dll
+            Ahorn
+            Assets
+            Graphics
+            Loenn
