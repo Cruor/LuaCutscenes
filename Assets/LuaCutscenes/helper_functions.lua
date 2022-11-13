@@ -702,9 +702,28 @@ function helpers.getWind()
     end
 end
 
--- Requires Enums
-function helpers.rumble(...)
-    -- TODO - Implement
+--- Rumbles the connected controller.
+-- @tparam strength The strength to rumble at; can be any #Celeste.RumbleStrength enum or a string
+-- @tparam[opt] length The length to rumble for; can be any #Celeste.RumbleLength enum or a string
+function helpers.rumble(strength, length)
+    length = length or "Medium"
+
+    if type(strength) == "string" then
+        strength = getEnum("Celeste.RumbleStrength", strength)
+    end
+
+    if type(length) == "string" then
+        length = getEnum("Celeste.RumbleLength", length)
+    end
+
+    celeste.Input.Rumble(strength, length)
+end
+
+--- Rumbles the connected controller.
+-- @number strength The strength to rumble at
+-- @number length The length to rumble for
+function helpers.rumbleSpecific(strength, length)
+    celeste.Input.RumbleSpecific(strength, length)
 end
 
 --- Disables skip cutscene from menu.
