@@ -9,6 +9,7 @@
 local luanet = _G.luanet
 
 local celeste = require("#celeste")
+local monocle = require("#monocle")
 local celesteMod = celeste.mod
 local csharpVector2 = require("#microsoft.xna.framework.vector2")
 local engine = require("#monocle.engine")
@@ -19,6 +20,7 @@ local classNamePrefix = "Celeste."
 local helpers = {}
 
 helpers.celeste = celeste
+helpers.monocle = monocle
 helpers.engine = engine
 
 local function vector2(x, y)
@@ -26,10 +28,8 @@ local function vector2(x, y)
 
     if typ == "table" and not y then
         return csharpVector2(x[1], x[2])
-
     elseif typ == "userdata" and not y then
         return x
-
     else
         return csharpVector2(x, y)
     end
@@ -60,14 +60,14 @@ end
 -- By default this is "Celeste.".
 -- @string prefix The new prefix.
 function helpers.setClassNamePrefix(prefix)
-	classNamePrefix = prefix
+    classNamePrefix = prefix
 end
 
 --- Get the prefix for getting Celeste classes.
 -- By default this is "Celeste.".
 -- @treturn #Monocle.Entity First entity of given class.
 function helpers.getClassNamePrefix()
-	return classNamePrefix
+    return classNamePrefix
 end
 
 --- Get the content of a file from a Celeste asset.
@@ -82,7 +82,11 @@ function helpers.loadCelesteAsset(filename)
     local content = helpers.readCelesteAsset(filename)
 
     if not content then
-        celesteMod.logger.log(celesteMod.LogLevel.Error, "Lua Cutscenes", "Failed to require asset in Lua: file '" .. filename .. "' not found")
+        celesteMod.logger.log(
+            celesteMod.LogLevel.Error,
+            "Lua Cutscenes",
+            "Failed to require asset in Lua: file '" .. filename .. "' not found"
+        )
 
         return
     end
@@ -96,7 +100,6 @@ function helpers.loadCelesteAsset(filename)
 
     if success then
         return result
-
     else
         celesteMod.logger.log(celesteMod.LogLevel.Error, "Lua Cutscenes", "Failed to require asset in Lua: " .. result)
     end
@@ -122,7 +125,7 @@ function helpers.getEnum(enum, value)
         enumValue = luanet.enum(luanet.import_type(class)[field], value)
     end
 
-	return enumValue
+    return enumValue
 end
 
 --- Pause code exection for duration seconds.
@@ -176,7 +179,6 @@ function helpers.postcard(dialog, sfxIn, sfxOut)
 
     if sfxOut then
         postcard = celeste.Postcard(message, sfxIn, sfxOut)
-
     else
         postcard = celeste.Postcard(message, sfxIn)
     end
@@ -225,7 +227,11 @@ end
 -- @bool[opt=true] registerDeathInStats If it should count as a death in journal.
 function helpers.die(direction, evenIfInvincible, registerDeathInStats)
     if player and not player.Dead then
-        player:Die(vector2(direction or {0, 0}), evenIfInvincible or false, registerDeathInStats or registerDeathInStats == nil)
+        player:Die(
+            vector2(direction or {0, 0}),
+            evenIfInvincible or false,
+            registerDeathInStats or registerDeathInStats == nil
+        )
     end
 end
 
@@ -241,7 +247,6 @@ function helpers.setPlayerState(state, locked)
         end
 
         player.StateMachine.State = celeste.Player[state]
-
     else
         player.StateMachine.State = state
     end
@@ -285,7 +290,8 @@ function helpers.changeRoom(name, spawnX, spawnY)
     local level = engine.Scene
 
     level.Session.Level = name
-    level.Session.RespawnPoint = level:GetSpawnPoint(vector2(spawnX or level.Bounds.Left, spawnY or level.Bounds.Bottom))
+    level.Session.RespawnPoint =
+        level:GetSpawnPoint(vector2(spawnX or level.Bounds.Left, spawnY or level.Bounds.Bottom))
     level.Session:UpdateLevelStartDashes()
 
     -- TODO - Test
@@ -321,15 +327,19 @@ function helpers.teleportTo(x, y, room, introType)
         end
 
         if x and y then
-            celeste.Mod[modName].MethodWrappers.TeleportTo(getLevel(), player, room, introType or player.IntroType, vector2(x - offsetX, y - offsetY))
-
+            celeste.Mod[modName].MethodWrappers.TeleportTo(
+                getLevel(),
+                player,
+                room,
+                introType or player.IntroType,
+                vector2(x - offsetX, y - offsetY)
+            )
         else
             celeste.Mod[modName].MethodWrappers.TeleportTo(getLevel(), player, room, introType or player.IntroType)
         end
-
-	else
-		player.Position = vector2(x, y)
-	end
+    else
+        player.Position = vector2(x, y)
+    end
 end
 
 --- Teleport the player to (x, y) pixels from current position.
@@ -351,7 +361,6 @@ function helpers.instantTeleportTo(x, y, room)
     if x and y then
         -- Provide own position
         celeste.Mod[modName].MethodWrappers.InstantTeleport(getLevel(), player, room or "", false, x, y)
-
     else
         -- Keep releative room position
         celeste.Mod[modName].MethodWrappers.InstantTeleport(getLevel(), player, x or "", true, 0.0, 0.0)
@@ -367,7 +376,6 @@ end
 function helpers.instantTeleport(x, y, room)
     if x and y then
         helpers.instantTeleportTo(player.Position.X + x, player.Position.Y + y, room)
-
     else
         helpers.instantTeleportTo(x, y, room)
     end
@@ -388,7 +396,6 @@ end
 function helpers.playSound(name, position)
     if position then
         return celeste.Audio.Play(name, position)
-
     else
         return celeste.Audio.Play(name)
     end
@@ -476,7 +483,6 @@ function helpers.setMusicLayer(layer, value)
         for _, index in ipairs(layer) do
             engine.Scene.Session.Audio.Music:Layer(index, value)
         end
-
     else
         engine.Scene.Session.Audio.Music:Layer(layer, value)
     end
@@ -492,7 +498,9 @@ function helpers.setSpawnPoint(target, absolute)
     local ct = cutsceneTrigger
 
     target = target or {0, 0}
-    target = absolute and target or vector2(ct.Position.X + ct.Width / 2 + target[1], ct.Position.Y + ct.Height / 2 + target[2])
+    target =
+        absolute and target or
+        vector2(ct.Position.X + ct.Width / 2 + target[1], ct.Position.Y + ct.Height / 2 + target[2])
 
     if session.RespawnPoint and (session.RespawnPoint.X ~= target.X or session.RespawnPoint.Y ~= target.Y) then
         session.HitCheckpoint = true
@@ -507,7 +515,6 @@ end
 function helpers.shake(direction, duration)
     if direction and duration then
         engine.Scene:DirectionalShake(direction, duration)
-
     else
         engine.Scene:Shake(direction)
     end
@@ -518,7 +525,6 @@ end
 function helpers.setInventory(inventory)
     if type(inventory) == "string" then
         engine.Scene.Session.Inventory = celeste.PlayerInventory[inventory]
-
     else
         engine.Scene.Session.Inventory = inventory
     end
@@ -529,7 +535,6 @@ end
 function helpers.getInventory(inventory)
     if inventory then
         return celeste.PlayerInventory[inventory]
-
     else
         return engine.Scene.Session.Inventory
     end
@@ -566,7 +571,9 @@ end
 -- TODO - Unhaunt.
 --- TODO
 function helpers.spawnBadeline(x, y, relativeToPlayer)
-    local position = (relativeToPlayer or relativeToPlayer == nil) and vector2(player.Position.X + x, player.Position.Y + y) or vector2(x, y)
+    local position =
+        (relativeToPlayer or relativeToPlayer == nil) and vector2(player.Position.X + x, player.Position.Y + y) or
+        vector2(x, y)
     local badeline = celeste.BadelineOldsite(position, 1)
 
     engine.Scene:Add(badeline)
@@ -608,7 +615,6 @@ end
 function helpers.setCoreMode(mode)
     if type(mode) == "string" then
         engine.Scene.CoreMode = engine.Scene.Session.CoreModes[mode]
-
     else
         engine.Scene.CoreMode = mode
     end
@@ -626,11 +632,13 @@ end
 -- @number[opt=endX] controllX X coordinate for controll point.
 -- @number[opt=endY] controllY coordinate for controll.
 function helpers.cassetteFlyTo(endX, endY, controllX, controllY)
-    playSound("event:/game/general/cassette_bubblereturn", vector2(engine.Scene.Camera.Position.X + 160, engine.Scene.Camera.Position.Y + 90))
+    playSound(
+        "event:/game/general/cassette_bubblereturn",
+        vector2(engine.Scene.Camera.Position.X + 160, engine.Scene.Camera.Position.Y + 90)
+    )
 
     if endX and endY and controllX and controllY then
         player:StartCassetteFly(vector2(endX, endY), vector2(controllX, controllY))
-
     else
         player:StartCassetteFly(vector2(endX, endY), vector2(endX, endY))
     end
@@ -679,7 +687,6 @@ function helpers.setWind(pattern)
 
     if windController then
         windController:SetPattern(pattern)
-
     else
         windController = celeste.WindController(pattern)
         level.Add(windController)
