@@ -741,3 +741,8 @@ end
 function helpers.disableRetry()
     engine.Scene.CanRetry = false
 end
+
+--- Makes the given Lua function into a Monocle coroutine, that can be added to entities.
+function helpers.makeCoroutine(func)
+    return monocle.Coroutine(celesteMod[modName].LuaHelper.LuaCoroutineToIEnumerator(coroutine.create(func)))
+end
