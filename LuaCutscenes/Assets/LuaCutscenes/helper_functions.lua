@@ -514,7 +514,6 @@ function helpers.shake(direction, duration)
 end
 
 -- If string name use preset from PlayerInventory, otherwise use passed in value
---- TODO
 function helpers.setInventory(inventory)
     if type(inventory) == "string" then
         engine.Scene.Session.Inventory = celeste.PlayerInventory[inventory]
@@ -525,7 +524,6 @@ function helpers.setInventory(inventory)
 end
 
 -- If name is given get inventory by name, otherwise the current player inventory
---- TODO
 function helpers.getInventory(inventory)
     if inventory then
         return celeste.PlayerInventory[inventory]
@@ -563,8 +561,7 @@ function helpers.getFlag(flag)
 end
 
 -- TODO - Accept table?
--- TODO - Unhaunt.
---- TODO
+-- TODO - Unhaunt, the index needs to be handled
 function helpers.spawnBadeline(x, y, relativeToPlayer)
     local position = (relativeToPlayer or relativeToPlayer == nil) and vector2(player.Position.X + x, player.Position.Y + y) or vector2(x, y)
     local badeline = celeste.BadelineOldsite(position, 1)
