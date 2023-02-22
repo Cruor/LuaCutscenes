@@ -233,7 +233,7 @@ end
 -- @param state Name of the state or the state number.
 -- @bool[opt=false] locked If this should prevent the player for changing state afterwards.
 function helpers.setPlayerState(state, locked)
-    player.StateMachine.Locked = locked or false
+    player.StateMachine.Locked = false
 
     if type(state) == "string" then
         if not state:match("^St") then
@@ -245,6 +245,8 @@ function helpers.setPlayerState(state, locked)
     else
         player.StateMachine.State = state
     end
+
+    player.StateMachine.Locked = locked or false
 end
 
 --- Gets the current state of the player.
