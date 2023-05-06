@@ -32,7 +32,10 @@ namespace Celeste.Mod.LuaCutscenes
 
         public override void OnEnter(Player player)
         {
-            cutsceneEntity?.OnEnter(player);
+            if (cutsceneEntity == null)
+            {
+                Scene.Add(cutsceneEntity = new LuaCutsceneEntity(this, player, data, unskippable: unskippable));
+            }
 
             if (onlyOnce && played)
             {
@@ -40,8 +43,7 @@ namespace Celeste.Mod.LuaCutscenes
             }
 
             played = true;
-            Scene.Add(cutsceneEntity = new LuaCutsceneEntity(this, player, data, unskippable: unskippable));
-            cutsceneEntity.OnEnter(player);
+            cutsceneEntity?.OnEnter(player);
 
             base.OnEnter(player);
         }
