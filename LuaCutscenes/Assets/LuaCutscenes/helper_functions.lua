@@ -166,6 +166,96 @@ function helpers.choice(...)
     return celesteMod[modName].ChoicePrompt.Choice + 1
 end
 
+-- Used by helpers.choiceDialog to store the current dialog table.
+-- When this gets set to null, the dialog ends.
+local currentDialog
+
+-- Used by helpers.choiceDialog to find an entry in the dialogTable based on its dialog key
+local function findDialogByKey(dialogTable, key)
+    for i, value in ipairs(dialogTable) do
+        local dialogKey = value[1]
+
+        if dialogKey == key then
+            return value
+        end
+    end
+end
+
+-- Used by helpers.choiceDialog to check whether the requirements for a choice are met
+local function requirementsMet(requires, ctx)
+    if type(requires) ~= "table" then
+        requires = { requires }
+    end
+
+    for _, required in ipairs(requires) do
+        local t = type(required)
+
+        if t == "function" then
+            if not required(ctx) then
+                return false
+            end
+        elseif t == "string" then
+            if not ctx.usedDialogs[required] then
+                return false
+            end
+        end
+    end
+
+    return true
+end
+
+---Displays a choice dialog, similar to intro cutscene of Reflection.
+---Unlike helpers.choice, this function also handles displaying dialogs and keeping track of which choices were already picked.
+---Check the 'example_talker.lua' file for a usage example.
+-- @tparam table Table describing all choices and requirements, etc.
+function helpers.choiceDialog(dialogTable)
+    currentDialog = dialogTable
+
+    local ctx = {
+        usedDialogs = {}
+    }
+
+    while currentDialog do
+        local currChoices = {}
+
+        -- determine which choices are valid
+        for _, value in ipairs(dialogTable) do
+            local dialogKey = value[1]
+
+            if not value.repeatable and ctx.usedDialogs[dialogKey] then
+                goto next
+            end
+
+            if value.requires and not requirementsMet(value.requires, ctx) then
+                goto next
+            end
+
+            table.insert(currChoices, dialogKey)
+            ::next::
+        end
+
+        local chosenKey = currChoices[helpers.choice(currChoices)]
+        local chosen = findDialogByKey(dialogTable, chosenKey)
+
+        if chosen.onChosen then
+            chosen.onChosen(ctx)
+        else
+            helpers.say(chosenKey .. "_SAY")
+        end
+
+        if chosen.onEnd then
+            chosen.onEnd(ctx)
+        end
+
+        ctx.usedDialogs[chosenKey] = true
+    end
+end
+
+---Closes the choice dialog previously opened by helpers.choiceDialog
+function helpers.closeChoiceDialog()
+    currentDialog = nil
+end
+
 --- Display postcard.
 -- @string dialog Dialog ID or message to show in the postcard.
 -- @tparam any sfxIn effect when opening the postcard or area ID.
