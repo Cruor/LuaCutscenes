@@ -109,7 +109,7 @@ function helpers.log(message, tag)
     celesteMod.logger.log(celesteMod.LogLevel.Info, tag or "Lua Cutscenes", tostring(message))
 end
 
---- Gets enum value
+--- Gets enum value.
 -- @string enum String name of enum.
 -- @tparam any value string name or enum value to get.
 function helpers.getEnum(enum, value)
@@ -148,7 +148,7 @@ end
 --- Display textbox with dialog.
 -- @string dialog Dialog ID used for the conversation.
 function helpers.say(dialog)
-    coroutine.yield(celeste.Textbox.Say(tostring(dialog), {}))
+    coroutine.yield(celeste.Textbox.Say(tostring(dialog)))
 end
 
 --- Display minitextbox with dialog.
@@ -323,8 +323,6 @@ end
 -- @param state Name of the state or the state number.
 -- @bool[opt=false] locked If this should prevent the player for changing state afterwards.
 function helpers.setPlayerState(state, locked)
-    player.StateMachine.Locked = false
-
     if type(state) == "string" then
         if not state:match("^St") then
             state = "St" .. state
@@ -552,6 +550,7 @@ end
 -- @number progress The new progress level.
 function helpers.setMusicProgression(progress)
     engine.Scene.Session.Audio.Music.Progress = progress
+    engine.Scene.Session.Audio:Apply()
 end
 
 --- Gets the current music progression.
@@ -578,7 +577,7 @@ end
 
 --- Attempt to set the player spawnpoint.
 -- @tparam[opt={0⸴ 0}] table target Where it should attempt to set the spawnpoint from.
--- @bool absolute If set uses absolute coordinates from target, otherwise it offsets from the center of the cutscene trigger.
+-- @bool[opt=false] absolute If set uses absolute coordinates from target, otherwise it offsets from the center of the cutscene trigger.
 function helpers.setSpawnPoint(target, absolute)
     local session = engine.Scene.Session
     local ct = cutsceneTrigger
@@ -593,8 +592,8 @@ function helpers.setSpawnPoint(target, absolute)
     end
 end
 
---- Shakes the camera
--- @tparam[opt] table Direction the screen should shake from.
+--- Shakes the camera.
+-- @tparam direction Direction the screen should shake from.
 -- @bool[opt] duration How long the screen should shake.
 function helpers.shake(direction, duration)
     if direction and duration then
@@ -605,7 +604,8 @@ function helpers.shake(direction, duration)
     end
 end
 
--- If string name use preset from PlayerInventory, otherwise use passed in value
+--- Set player inventory
+-- @param name Inventory to use. If name is string look it up in valid inventories, otherwise use the inventory.
 function helpers.setInventory(inventory)
     if type(inventory) == "string" then
         engine.Scene.Session.Inventory = celeste.PlayerInventory[inventory]
@@ -615,7 +615,8 @@ function helpers.setInventory(inventory)
     end
 end
 
--- If name is given get inventory by name, otherwise the current player inventory
+--- Get player inventory
+-- @string[opt] inventory If name is given get inventory by name, otherwise the current player inventory
 function helpers.getInventory(inventory)
     if inventory then
         return celeste.PlayerInventory[inventory]
@@ -632,10 +633,29 @@ function helpers.setCameraOffset(x, y)
     engine.Scene.CameraOffset = y and vector2(x * 48, y * 32) or x
 end
 
---- Get the current offset struct
+--- Get the current offset struct.
 -- @treturn {number⸴ number} The camera offset.
 function helpers.getCameraOffset()
     return engine.Scene.CameraOffset
+end
+
+--- Get the current room coordinates.
+-- @treturn {number⸴ number} The camera offset.
+function helpers.getRoomCoordinates()
+  return engine.Scene.LevelOffset
+end
+
+--- Get the current room coordinates offset by x and y.
+-- @param x X coordinate or table of coordinates to offset by.
+-- @number[opt] y Y coordinate to offset by.
+-- @treturn {number, number} The camera offset.
+function helpers.getRoomCoordinatesOffset(x, y)
+    if type(x) == "number" then
+        return engine.Scene.LevelOffset + vector2(x, y)
+
+    else
+        return engine.Scene.LevelOffset + vector2(x[1], x[2])
+    end
 end
 
 --- Set session flag.
@@ -707,6 +727,18 @@ end
 -- @treturn #Celeste.Session.CoreMode.
 function helpers.getCoreMode()
     return engine.Scene.CoreMode
+end
+
+--- Changes the current colorgrade to the new one.
+-- @string colorGrade Name of the color grade
+-- @bool[opt=false] instant Wheter the color grade should instantly change or gradually change
+function helpers.setColorGrade(colorGrade, instant)
+    if instant then
+        engine.Scene:SnapColorGrade(colorGrade)
+
+    else
+        engine.Scene:NextColorGrade(colorGrade)
+    end
 end
 
 --- Bubble flies (cassette collection) to the target. This is in pixels and uses map based coordinates.
@@ -803,4 +835,14 @@ end
 --- Disables retrying from menu.
 function helpers.disableRetry()
     engine.Scene.CanRetry = false
+end
+
+--- Prevents the player from even accessing the pause menu.
+function helpers.disablePause()
+    engine.Scene.PauseLock = true
+end
+
+--- Reenables the player to pause the game.
+function helpers.enablePause()
+    engine.Scene.PauseLock = false
 end
