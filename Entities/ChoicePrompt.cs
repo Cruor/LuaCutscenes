@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Xml;
 using Monocle;
 using Microsoft.Xna.Framework;
+using System;
 
 namespace Celeste.Mod.LuaCutscenes {
     [Tracked]
@@ -24,6 +25,9 @@ namespace Celeste.Mod.LuaCutscenes {
         }
         
         public static int Choice;
+        private Vector2 renderOffset = new Vector2(260f, 120f);
+        private int textboxScreenLimit;
+        private int scroll;
         
         public static IEnumerator Prompt(params string[] options) {
             var obj = new ChoicePrompt();
@@ -37,22 +41,23 @@ namespace Celeste.Mod.LuaCutscenes {
                 yield return null;
             }
 
-            Choice = obj.Index;
+            Choice = obj.currentOptionIndex;
             obj.RemoveSelf();
         }
 
-        private List<Option> Options = new List<Option>();
+        private List<Option> options = new List<Option>();
         private bool Alive, Confirmed;
-        private int Index;
+        private int currentOptionIndex;
 
         public ChoicePrompt() {
             this.Tag = (int) Tags.HUD;
             this.Alive = true;
+            this.textboxScreenLimit = (int)Math.Floor((Engine.Height - (int)renderOffset.Y) / 160f);
         }
 
         public void Add(Option option) {
-            int idx = this.Options.Count;
-            this.Options.Add(option);
+            int idx = this.options.Count;
+            this.options.Add(option);
             Engine.Scene.Add(option);
 
             option.Position = new Vector2(260f, (float) (120.0 + 160.0 * idx));
@@ -61,9 +66,29 @@ namespace Celeste.Mod.LuaCutscenes {
 
         public override void Removed(Scene scene) {
             base.Removed(scene);
-            foreach (var opt in this.Options) {
+            foreach (var opt in this.options) {
                 opt.RemoveSelf();
             }
+        }
+        public static Vector2 textboxPosition(int index, int scroll)
+        {
+            return new Vector2(0f, 160f * index - 160f * scroll);
+        }
+
+        public override void Render()
+        {
+            for (int index = scroll; index < this.options.Count && index - scroll < textboxScreenLimit; ++index)
+            {
+                if (index != currentOptionIndex)
+                {
+                    options[index].Render(renderOffset + textboxPosition(index, scroll));
+                }
+            }
+
+            // Make sure the current selected one renders on top (in case of pop outs)
+            options[currentOptionIndex].Render(renderOffset + textboxPosition(currentOptionIndex, scroll));
+
+            base.Render();
         }
 
 
@@ -72,7 +97,7 @@ namespace Celeste.Mod.LuaCutscenes {
 
             if (this.Confirmed) {
                 this.Alive = false;
-                foreach (var opt in this.Options) {
+                foreach (var opt in this.options) {
                     opt.Ease = Calc.Approach(opt.Ease, 0f, Engine.DeltaTime * 4);
                     if (opt.Ease != 0f) {
                         this.Alive = true;
@@ -82,18 +107,26 @@ namespace Celeste.Mod.LuaCutscenes {
                 if (Input.MenuConfirm.Pressed) {
                     Audio.Play("event:/ui/game/chatoptions_select");
                     this.Confirmed = true;
-                } else if (Input.MenuUp.Pressed && this.Index > 0) {
+                } else if (Input.MenuUp.Pressed && this.currentOptionIndex > 0) {
                     Audio.Play("event:/ui/game/chatoptions_roll_up");
-                    this.Index--;
-                } else if (Input.MenuDown.Pressed && this.Index < this.Options.Count - 1) {
+                    this.currentOptionIndex--;
+                    if (currentOptionIndex < scroll)
+                    {
+                        scroll--;
+                    }
+                } else if (Input.MenuDown.Pressed && this.currentOptionIndex < this.options.Count - 1) {
                     Audio.Play("event:/ui/game/chatoptions_roll_down");
-                    this.Index++;
+                    this.currentOptionIndex++;
+                    if (currentOptionIndex - scroll >= textboxScreenLimit)
+                    {
+                        scroll++;
+                    }
                 }
 
                 var idx = 0;
-                foreach (var opt in this.Options) {
+                foreach (var opt in this.options) {
                     opt.Ease = Calc.Approach(opt.Ease, 1f, Engine.DeltaTime * 4);
-                    opt.Highlight = Calc.Approach(opt.Highlight, idx == this.Index ? 1f : 0f, Engine.DeltaTime * 4);
+                    opt.Highlight = Calc.Approach(opt.Highlight, idx == this.currentOptionIndex ? 1f : 0f, Engine.DeltaTime * 4);
                     opt.Portrait?.Update();
                     idx++;
                 }
@@ -146,7 +179,7 @@ namespace Celeste.Mod.LuaCutscenes {
             }
         }
 
-        public override void Render() {
+        public void Render(Vector2 position) {
             if (this.Scene is Level level && level.Paused) {
                 return;
             }
@@ -154,7 +187,6 @@ namespace Celeste.Mod.LuaCutscenes {
             float introEase = Monocle.Ease.CubeOut(this.Ease);
             float highlightEase = Monocle.Ease.CubeInOut(this.Highlight);
 
-            var position = this.Position;
             position.Y += (float) (-32.0 * (1.0 - introEase));
             position.X += highlightEase * 32f;
 
