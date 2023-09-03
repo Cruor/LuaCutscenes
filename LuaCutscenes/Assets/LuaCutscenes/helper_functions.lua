@@ -21,7 +21,7 @@ local helpers = {}
 helpers.celeste = celeste
 helpers.engine = engine
 
-local function vector2(x, y)
+function helpers.vector2(x, y)
     local typ = type(x)
 
     if typ == "table" and not y then
@@ -846,3 +846,5 @@ end
 function helpers.enablePause()
     engine.Scene.PauseLock = false
 end
+
+return helpers

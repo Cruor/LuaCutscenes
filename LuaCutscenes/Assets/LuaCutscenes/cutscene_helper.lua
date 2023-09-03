@@ -1,12 +1,26 @@
 local cutsceneHelper = {}
 
 local celesteMod = require("#celeste.mod")
+local systemException = require("#System.Exception")
 
 local function threadProxyResume(self, ...)
-    return coroutine.resume(self.value, ...)
+    local thread = self.value
+
+    if coroutine.status(thread) == "dead" then
+        return false, nil
+    end
+
+    local success, message = coroutine.resume(thread)
+
+    -- The error message should be returned as an exception and not a string
+    if not success then
+        return success, systemException(message)
+    end
+
+    return success, message
 end
 
-local function prepareCutsene(env, func)
+local function prepareCutscene(env, func)
     local success, onBegin, onEnd = pcall(func)
 
     if success then
@@ -46,24 +60,19 @@ local function prepareTalker(env, func)
     end
 end
 
-local environmentCode = [[
-
-_ENV.helpers = helpers
-
-for k, v in pairs(helpers) do
-    _ENV[k] = v
-end
-
-]]
-
 function cutsceneHelper.readFile(filename, modName)
     return celesteMod[modName].LuaHelper.GetFileContent(filename)
 end
 
-local function addEnvironmentRequire(content, data)
-    local helperFunctionsContent = cutsceneHelper.readFile(data.modMetaData.Name .. ":/Assets/LuaCutscenes/helper_functions", data.modMetaData.Name)
+local function addHelperFunctions(data, env)
+    local helperContent = cutsceneHelper.readFile(data.modMetaData.Name .. ":/Assets/LuaCutscenes/helper_functions", data.modMetaData.Name)
+    local helperFunctions = load(helperContent, nil, nil, env)()
 
-    return helperFunctionsContent .. environmentCode .. content
+    for k, v in pairs(helperFunctions) do
+        env[k] = v
+    end
+
+    env.helpers = helperFunctions
 end
 
 function cutsceneHelper.getLuaEnv(data)
@@ -81,7 +90,7 @@ function cutsceneHelper.getLuaData(filename, data, preparationFunc)
     local content = cutsceneHelper.readFile(filename, data.modMetaData.Name)
 
     if content then
-        content = addEnvironmentRequire(content, data)
+        addHelperFunctions(data, env)
 
         local func = load(content, nil, nil, env)
 
@@ -90,7 +99,7 @@ function cutsceneHelper.getLuaData(filename, data, preparationFunc)
 end
 
 function cutsceneHelper.getCutsceneData(filename, data)
-    return cutsceneHelper.getLuaData(filename, data, prepareCutsene)
+    return cutsceneHelper.getLuaData(filename, data, prepareCutscene)
 end
 
 function cutsceneHelper.getTalkerData(filename, data)
