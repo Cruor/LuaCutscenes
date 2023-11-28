@@ -19,6 +19,7 @@ entities.luaCutscenes/luaTalker.attributes.description.unskippable=Whether the t
 # Lua Cutscene
 triggers.luaCutscenes/luaCutsceneTrigger.placements.name.cutscene=Lua Cutscene
 triggers.luaCutscenes/luaCutsceneTrigger.attributes.description.onlyOnce=If the trigger should only trigger once per room load. This means it can trigger again after death or transitioning into the room again.
+triggers.luaCutscenes/luaCutsceneTrigger.attributes.description.oncePerSession=If the trigger should only trigger once per session. This means the trigger will only play once, unless the player dies in the room before transitioning.
 triggers.luaCutscenes/luaCutsceneTrigger.attributes.description.filename=Cutscene file to load relative to mod folder. File extension is not included.
 triggers.luaCutscenes/luaCutsceneTrigger.attributes.description.arguments=Extra arguments passed to the cutscene. Available as `arguments` in code. Attempts to evaluate to Lua code if possible.
 triggers.luaCutscenes/luaCutsceneTrigger.attributes.description.unskippable=Whether the cutscene should be skippable from the start or not.

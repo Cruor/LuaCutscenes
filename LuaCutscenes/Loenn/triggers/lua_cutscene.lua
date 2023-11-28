@@ -5,6 +5,7 @@ luaCutscene.placements = {
     name = "cutscene",
     data = {
         onlyOnce = false,
+        oncePerSession = false,
         filename = "",
         arguments = "",
         unskippable = false

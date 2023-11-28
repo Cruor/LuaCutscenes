@@ -15,16 +15,20 @@ namespace Celeste.Mod.LuaCutscenes
     {
         private bool played;
         private bool onlyOnce;
+        private bool oncePerSession;
         private bool unskippable;
         private EntityData data;
+        private EntityID id;
 
         private LuaCutsceneEntity cutsceneEntity;
 
-        public LuaCutsceneTrigger(EntityData data, Vector2 offset) : base(data, offset)
+        public LuaCutsceneTrigger(EntityData data, Vector2 offset, EntityID id) : base(data, offset)
         {
             this.data = data;
+            this.id = id;
 
             onlyOnce = data.Bool("onlyOnce", true);
+            oncePerSession = data.Bool("oncePerSession", false);
             unskippable = data.Bool("unskippable", false);
 
             played = false;
@@ -32,18 +36,24 @@ namespace Celeste.Mod.LuaCutscenes
 
         public override void OnEnter(Player player)
         {
-            if (cutsceneEntity == null)
-            {
-                Scene.Add(cutsceneEntity = new LuaCutsceneEntity(this, player, data, unskippable: unskippable));
-            }
-
             if (onlyOnce && played)
             {
                 return;
             }
 
+            if (cutsceneEntity == null || cutsceneEntity.Finished)
+            {
+                Scene.Add(cutsceneEntity = new LuaCutsceneEntity(this, player, data, unskippable: unskippable));
+            }
+
             played = true;
             cutsceneEntity?.OnEnter(player);
+
+            if (oncePerSession)
+            {
+                RemoveSelf();
+                SceneAs<Level>().Session.DoNotLoad.Add(id);
+            }
 
             base.OnEnter(player);
         }

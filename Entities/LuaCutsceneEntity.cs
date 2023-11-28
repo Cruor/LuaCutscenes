@@ -18,6 +18,8 @@ namespace Celeste.Mod.LuaCutscenes
         private string argumentsString;
         private bool unskippable;
 
+        public bool Finished;
+
         private LuaTable cutsceneEnv;
 
         private IEnumerator onBeginRoutine;
@@ -108,6 +110,7 @@ namespace Celeste.Mod.LuaCutscenes
             this.data = data;
             this.cutsceneTrigger = cutsceneTrigger;
             this.unskippable = unskippable;
+            this.Finished = false;
 
             filename = data.Attr("filename", "");
             argumentsString = data.Attr("arguments", "");
@@ -141,6 +144,7 @@ namespace Celeste.Mod.LuaCutscenes
             try
             {
                 onEndFunction?.Call(new object[] { level, WasSkipped });
+                this.Finished = true;
             }
             catch (Exception e)
             {
