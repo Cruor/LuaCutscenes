@@ -202,5 +202,11 @@ namespace Celeste.Mod.LuaCutscenes
                 };
             }
         }
+
+        public static Postcard CreatePostcard(string dialog, string sfxIn, string sfxOut)
+            => new Postcard(Dialog.Get(dialog) ?? dialog, sfxIn, sfxOut);
+
+        public static Postcard CreatePostcard(string dialog, int area)
+            => new Postcard(Dialog.Get(dialog) ?? dialog, area);
     }
 }

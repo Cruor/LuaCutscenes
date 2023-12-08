@@ -261,14 +261,12 @@ end
 -- @tparam any sfxIn effect when opening the postcard or area ID.
 -- @string[opt=nil] sfxOut Sound effect when closing the postcard. If not used then second argument is assumed to be area ID.
 function helpers.postcard(dialog, sfxIn, sfxOut)
-    local message = celeste.Dialog.Get(dialog) or dialog
     local postcard
 
     if sfxOut then
-        postcard = celeste.Postcard(message, sfxIn, sfxOut)
-
+        postcard = celeste.Mod[modName].MethodWrappers.CreatePostcard(dialog, sfxIn, sfxOut)
     else
-        postcard = celeste.Postcard(message, sfxIn)
+        postcard = celeste.Mod[modName].MethodWrappers.CreatePostcard(dialog, sfxIn)
     end
 
     getRoom():add(postcard)
