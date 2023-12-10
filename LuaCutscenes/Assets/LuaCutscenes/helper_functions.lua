@@ -158,10 +158,16 @@ function helpers.miniTextbox(dialog)
 end
 
 --- Allow the user to select one of several minitextboxes, similar to intro cutscene of Reflection.
--- @string ... Dialog IDs for each of the textboses as varargs.
+-- @string ... Dialog IDs for each of the textboses as varargs. First argument can be a table of dialog ids instead.
 -- @treturn number The index of the option the player selected.
 function helpers.choice(...)
-    coroutine.yield(celesteMod[modName].ChoicePrompt.Prompt(...))
+    local choices = {...}
+
+    if type(choices[1]) == "table" then
+        choices = choices[1]
+    end
+
+    coroutine.yield(celesteMod[modName].ChoicePrompt.Prompt(table.unpack(choices)))
 
     return celesteMod[modName].ChoicePrompt.Choice + 1
 end
@@ -194,6 +200,7 @@ local function requirementsMet(requires, ctx)
             if not required(ctx) then
                 return false
             end
+
         elseif t == "string" then
             if not ctx.usedDialogs[required] then
                 return false
@@ -204,11 +211,28 @@ local function requirementsMet(requires, ctx)
     return true
 end
 
+local function prepareDialogTable(dialogTable)
+    local dialogs = {}
+
+    for _, dialog in ipairs(dialogTable) do
+        if type(dialog) == "string" then
+            table.insert(dialogs, {dialog, repeatable = true})
+
+        else
+            table.insert(dialogs, dialog)
+        end
+    end
+
+    return dialogs
+end
+
 ---Displays a choice dialog, similar to intro cutscene of Reflection.
 ---Unlike helpers.choice, this function also handles displaying dialogs and keeping track of which choices were already picked.
 ---Check the 'example_talker.lua' file for a usage example.
 -- @tparam table Table describing all choices and requirements, etc.
-function helpers.choiceDialog(dialogTable)
+function helpers.choiceDialog(dialogs)
+    local dialogTable = prepareDialogTable(dialogs)
+
     currentDialog = dialogTable
 
     local ctx = {
@@ -239,6 +263,7 @@ function helpers.choiceDialog(dialogTable)
 
         if chosen.onChosen then
             chosen.onChosen(ctx)
+
         else
             helpers.say(chosenKey .. "_SAY")
         end
