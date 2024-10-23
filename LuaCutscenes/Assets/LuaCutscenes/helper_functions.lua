@@ -725,16 +725,16 @@ function helpers.getBloomStrength()
     return engine.Scene.Bloom.Strength
 end
 
---- Sets the current darkness (bloom) strength.
--- @number amount New bloom strength.
+--- Sets the current darkness strength.
+-- @number amount New darkness strength.
 function helpers.setDarkness(amount)
-    engine.Scene.Bloom.Strength = amount
+    engine.Scene.Lighting.Alpha = amount
 end
 
---- Returns the current darkness (bloom) strength.
--- @treturn number Bloom strength.
+--- Returns the current darkness strength.
+-- @treturn number Darkness strength.
 function helpers.getDarkness()
-    return engine.Scene.Bloom.Strength
+    return engine.Scene.Lighting.Alpha
 end
 
 --- Sets the current core mode.
