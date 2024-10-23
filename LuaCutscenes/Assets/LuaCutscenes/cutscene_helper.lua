@@ -14,13 +14,15 @@ local function threadProxyResume(self, ...)
 
     -- The error message should be returned as an exception and not a string
     if not success then
-        return success, systemException(message)
+        local errorMessage = string.format("%s\n%s", message, debug.traceback(thread))
+
+        return success, systemException(errorMessage)
     end
 
     return success, message
 end
 
-local function prepareCutscene(env, func)
+local function prepareCutscene(env, func, filename)
     local success, onBegin, onEnd = pcall(func)
 
     if success then
@@ -36,13 +38,15 @@ local function prepareCutscene(env, func)
         return onBegin, onEnd, onEnter, onStay, onLeave
 
     else
-        celesteMod.logger.log(celesteMod.logLevel.error, "Lua Cutscenes", "Failed to load cutscene in Lua: " .. onBegin)
+        local errorMessage = string.format("Failed to load cutscene '%s' in Lua: %s", filename, onBegin)
+
+        celesteMod.logger.log(celesteMod.logLevel.error, "Lua Cutscenes", errorMessage)
 
         return success
     end
 end
 
-local function prepareTalker(env, func)
+local function prepareTalker(env, func, filename)
     local success, onTalk, onEnd = pcall(func)
 
     if success then
@@ -54,7 +58,9 @@ local function prepareTalker(env, func)
         return onTalk, onEnd
 
     else
-        celesteMod.logger.log(celesteMod.logLevel.error, "Lua Cutscenes", "Failed to load cutscene in Lua: " .. onTalk)
+        local errorMessage = string.format("Failed to load cutscene '%s' in Lua: %s", filename, onTalk)
+
+        celesteMod.logger.log(celesteMod.logLevel.error, "Lua Cutscenes", errorMessage)
 
         return success
     end
@@ -66,7 +72,7 @@ end
 
 local function addHelperFunctions(data, env)
     local helperContent = cutsceneHelper.readFile(data.modMetaData.Name .. ":/Assets/LuaCutscenes/helper_functions", data.modMetaData.Name)
-    local helperFunctions = load(helperContent, nil, nil, env)()
+    local helperFunctions = load(helperContent, "helper_functions", nil, env)()
 
     for k, v in pairs(helperFunctions) do
         env[k] = v
@@ -92,9 +98,9 @@ function cutsceneHelper.getLuaData(filename, data, preparationFunc)
     if content then
         addHelperFunctions(data, env)
 
-        local func = load(content, nil, nil, env)
+        local func = load(content, filename, nil, env)
 
-        return env, preparationFunc(env, func)
+        return env, preparationFunc(env, func, filename)
     end
 end
 
